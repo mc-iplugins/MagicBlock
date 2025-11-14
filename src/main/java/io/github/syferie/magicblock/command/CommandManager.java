@@ -174,6 +174,8 @@ public class CommandManager implements CommandExecutor {
         }
 
         ItemStack specialBlock = plugin.createMagicBlock();
+        // 先设置最大使用次数，再设置当前使用次数，确保lore能正确显示
+        plugin.getBlockManager().setMaxUseTimes(specialBlock, times);
         plugin.getBlockManager().setUseTimes(specialBlock, times);
         plugin.getBlockManager().updateLore(specialBlock, times);
 
@@ -228,6 +230,8 @@ public class CommandManager implements CommandExecutor {
         }
 
         ItemStack specialBlock = plugin.createMagicBlock();
+        // 先设置最大使用次数，再设置当前使用次数，确保lore能正确显示
+        plugin.getBlockManager().setMaxUseTimes(specialBlock, times);
         plugin.getBlockManager().setUseTimes(specialBlock, times);
         plugin.getBlockManager().updateLore(specialBlock, times);
 

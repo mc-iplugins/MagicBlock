@@ -18,8 +18,16 @@ display:
 
   # Control which information lines are shown in the lore
   show-info:
-    usage-count: true      # Show "Uses: X/Y"
-    progress-bar: true     # Show usage progress bar
+    usage-count: true # Show "Uses: X/Y"
+    progress-bar: true # Show usage progress bar
+
+  # Customizable lore text labels
+  lore-text:
+    uses-label: "Uses:" # Text label for usage count display
+    infinite-symbol: "∞" # Symbol for infinite uses
+    progress-bar:
+      filled-char: "■" # Character for filled progress bar
+      empty-char: "□" # Character for empty progress bar
 
   # Decorative lore lines will be displayed between magic-lore and usage information
   # Supports color codes (&) and PlaceholderAPI variables if installed
@@ -72,12 +80,12 @@ foods:
     heal: 4.0
     effects:
       REGENERATION:
-        duration: 100  # in ticks (20 ticks = 1 second)
-        amplifier: 1   # effect level - 1
+        duration: 100 # in ticks (20 ticks = 1 second)
+        amplifier: 1 # effect level - 1
       ABSORPTION:
         duration: 2400
         amplifier: 0
-  
+
   ENCHANTED_GOLDEN_APPLE:
     food-level: 4
     saturation: 9.6
@@ -100,12 +108,12 @@ foods:
     food-level: 8
     saturation: 12.8
     heal: 2.0
-    
+
   GOLDEN_CARROT:
     food-level: 6
     saturation: 14.4
     heal: 3.0
-    
+
   BREAD:
     food-level: 5
     saturation: 6.0

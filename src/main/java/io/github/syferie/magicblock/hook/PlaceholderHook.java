@@ -51,6 +51,76 @@ public class PlaceholderHook extends PlaceholderExpansion {
             return "0";
         }
 
+        // 魔法食物相关占位符
+        if (params.equalsIgnoreCase("magicfood_food_uses")) {
+            if (plugin.getMagicFood() != null) {
+                return String.valueOf(plugin.getMagicFood().getFoodUses(player.getUniqueId()));
+            }
+            return "0";
+        }
+
+        if (params.equalsIgnoreCase("magicfood_remaining_uses")) {
+            try {
+                if (player.isOnline() && player.getPlayer() != null && plugin.getMagicFood() != null) {
+                    ItemStack item = player.getPlayer().getInventory().getItemInMainHand();
+                    if (item != null && plugin.getMagicFood().isMagicFood(item)) {
+                        int remainingUses = plugin.getMagicFood().getUseTimes(item);
+                        return String.valueOf(Math.max(0, remainingUses)); // 确保不返回负数
+                    }
+                }
+            } catch (Exception e) {
+                // 记录错误但不抛出异常，返回默认值
+                plugin.getLogger().warning("Error getting magicfood_remaining_uses placeholder: " + e.getMessage());
+            }
+            return "0";
+        }
+
+        if (params.equalsIgnoreCase("magicfood_max_uses")) {
+            try {
+                if (player.isOnline() && player.getPlayer() != null && plugin.getMagicFood() != null) {
+                    ItemStack item = player.getPlayer().getInventory().getItemInMainHand();
+                    if (item != null && plugin.getMagicFood().isMagicFood(item)) {
+                        int maxUses = plugin.getMagicFood().getMaxUseTimes(item);
+                        return String.valueOf(Math.max(0, maxUses)); // 确保不返回负数
+                    }
+                }
+            } catch (Exception e) {
+                // 记录错误但不抛出异常，返回默认值
+                plugin.getLogger().warning("Error getting magicfood_max_uses placeholder: " + e.getMessage());
+            }
+            return "0";
+        }
+
+        if (params.equalsIgnoreCase("magicfood_uses_progress")) {
+            try {
+                if (player.isOnline() && player.getPlayer() != null && plugin.getMagicFood() != null) {
+                    ItemStack item = player.getPlayer().getInventory().getItemInMainHand();
+                    if (item != null && plugin.getMagicFood().isMagicFood(item)) {
+                        int maxUses = plugin.getMagicFood().getMaxUseTimes(item);
+                        int remainingUses = plugin.getMagicFood().getUseTimes(item);
+                        
+                        // 检查是否是无限次数
+                        if (maxUses == Integer.MAX_VALUE - 100) {
+                            return "100.0"; // 无限次数显示为100%
+                        }
+                        
+                        // 防止除零错误
+                        if (maxUses > 0) {
+                            // 确保计算结果在合理范围内
+                            int usedUses = Math.max(0, maxUses - Math.max(0, remainingUses));
+                            double progress = ((double) usedUses / maxUses) * 100;
+                            progress = Math.max(0.0, Math.min(100.0, progress)); // 限制在0-100范围内
+                            return String.format("%.1f", progress);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // 记录错误但不抛出异常，返回默认值
+                plugin.getLogger().warning("Error getting magicfood_uses_progress placeholder: " + e.getMessage());
+            }
+            return "0.0";
+        }
+
         // 获取玩家剩余的魔法方块使用次数
         if (params.equalsIgnoreCase("remaining_uses")) {
             if (player.isOnline() && player.getPlayer() != null) {

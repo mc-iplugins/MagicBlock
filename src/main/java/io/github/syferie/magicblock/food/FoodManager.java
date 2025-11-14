@@ -11,13 +11,11 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -190,11 +188,14 @@ public class FoodManager implements Listener, IMagicFood {
         // 添加使用次数信息
         if (plugin.getFoodConfig().getBoolean("display.show-info.usage-count", true)) {
             StringBuilder usageText = new StringBuilder();
-            usageText.append(ChatColor.GRAY).append("Uses: ");
+            String usesLabel = plugin.getFoodConfig().getString("display.lore-text.uses-label", "Uses:");
+            String infiniteSymbol = plugin.getFoodConfig().getString("display.lore-text.infinite-symbol", "∞");
+            
+            usageText.append(ChatColor.GRAY).append(usesLabel).append(" ");
             if (isInfinite) {
-                usageText.append(ChatColor.AQUA).append("∞")
+                usageText.append(ChatColor.AQUA).append(infiniteSymbol)
                         .append(ChatColor.GRAY).append("/")
-                        .append(ChatColor.GRAY).append("∞");
+                        .append(ChatColor.GRAY).append(infiniteSymbol);
             } else {
                 usageText.append(ChatColor.AQUA).append(times)
                         .append(ChatColor.GRAY).append("/")
@@ -208,15 +209,18 @@ public class FoodManager implements Listener, IMagicFood {
             StringBuilder progressBar = new StringBuilder();
             progressBar.append(ChatColor.GRAY).append("[");
 
+            String filledChar = plugin.getFoodConfig().getString("display.lore-text.progress-bar.filled-char", "■");
+            String emptyChar = plugin.getFoodConfig().getString("display.lore-text.progress-bar.empty-char", "□");
+            
             int barLength = 10;
             double progress = (double) times / maxTimes;
             int filledBars = (int) Math.round(progress * barLength);
 
             for (int i = 0; i < barLength; i++) {
                 if (i < filledBars) {
-                    progressBar.append(ChatColor.GREEN).append("■");
+                    progressBar.append(ChatColor.GREEN).append(filledChar);
                 } else {
-                    progressBar.append(ChatColor.GRAY).append("■");
+                    progressBar.append(ChatColor.GRAY).append(emptyChar);
                 }
             }
             progressBar.append(ChatColor.GRAY).append("]");
