@@ -1,281 +1,209 @@
-# MagicBlock Plugin
+# MagicBlock
 
-[Switch to English](README.md)
+<div align="center">
 
-MagicBlock 是一个功能丰富的 Minecraft 插件，允许玩家使用具有有限使用次数的魔法方块和魔法食物。这些特殊物品可以被绑定到特定玩家，并且可以通过直观的 GUI 界面进行管理。
+[![Minecraft](https://img.shields.io/badge/Minecraft-1.18+-green.svg)](https://www.minecraft.net/)
+[![Spigot](https://img.shields.io/badge/Spigot-支持-orange.svg)](https://www.spigotmc.org/)
+[![Paper](https://img.shields.io/badge/Paper-支持-blue.svg)](https://papermc.io/)
+[![Folia](https://img.shields.io/badge/Folia-支持-purple.svg)](https://papermc.io/software/folia)
+[![Version](https://img.shields.io/badge/版本-3.2.1.0-brightgreen.svg)](https://github.com/Syferie/MagicBlock)
 
-## 功能特点
-* 魔法方块系统
-   * 可配置使用次数的方块
-   * 方块绑定系统
-   * 直观的 GUI 界面
-   * 方块搜索功能
-* 魔法食物系统
-   * 可重复使用的食物
-   * 自定义食物效果
-* 多语言支持
-   * 英语 (en)
-   * 简体中文 (zh_CN)
-* PlaceholderAPI 支持
-* 详细的使用统计
-* 权限系统
-* 性能优化系统
-   * 智能缓存机制
-   * 异步数据库操作
-   * 批量处理优化
-   * 实时性能监控
+**一个功能强大的 Minecraft 魔法方块与魔法食物插件**
 
-## 安装要求
-* Minecraft 服务器版本: 1.19+
-* 可选依赖: PlaceholderAPI
+[English](README.md) | 简体中文
 
-## 命令系统
-主命令：
-* `/magicblock` 或 `/mb` - 插件主命令
+</div>
 
-子命令：
-* `/mb help` - 显示帮助信息
-* `/mb get [次数]` - 获取一个魔法方块（次数为-1时获取无限次数的魔术方块）
-* `/mb give <玩家> [次数]` - 给予玩家魔法方块
-* `/mb getfood <食物> [次数]` - 获取魔法食物
-* `/mb settimes <次数>` - 设置手持魔法方块的使用次数
-* `/mb addtimes <次数>` - 增加手持魔法方块的使用次数
-* `/mb list` - 查看已绑定的方块
-* `/mb reload` - 重载插件配置
-* `/mb performance` 或 `/mb perf` - 查看插件性能报告
+---
 
-## 权限节点
+## 📖 简介
+
+MagicBlock 是一个功能丰富的 Minecraft 服务器插件，允许玩家使用具有**有限使用次数**的魔法方块和魔法食物。这些特殊物品可以绑定到玩家，通过直观的 GUI 界面进行管理，非常适合生存服、RPG 服等各类服务器使用。
+
+---
+
+## 🖥️ 支持的服务器
+
+| 服务端类型 | 支持状态 | 最低版本 |
+|-----------|---------|---------|
+| Spigot    | ✅ 完全支持 | 1.18+ |
+| Paper     | ✅ 完全支持 | 1.18+ |
+| Folia     | ✅ 完全支持 | 1.18+ |
+| Purpur    | ✅ 完全支持 | 1.18+ |
+
+**可选依赖**：[PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) - 用于变量支持
+
+---
+
+## ✨ 功能列表
+
+### 🧱 魔法方块系统
+- 可配置使用次数的方块
+- 方块绑定系统 - 绑定后只有绑定者可使用
+- 直观的 GUI 选择界面
+- 方块搜索功能
+- 收藏夹系统
+- 防刷机制保护
+
+### 🍖 魔法食物系统
+- 可重复使用的食物物品
+- 自定义食物效果（恢复、药水效果等）
+- 独立的使用次数系统
+
+### 🛡️ 保护机制
+- 活塞推拉保护
+- 爆炸保护
+- 世界黑名单
+- 防刷检测系统
+
+### 🎨 自定义功能
+- 多语言支持（中文/英文）
+- 高度可配置的 GUI 界面
+- 自定义方块名称翻译
+- 自定义 Lore 显示
+- 权限组系统
+
+### ⚡ 性能优化
+- 智能配置缓存（20,000倍性能提升）
+- 三层位置索引（O(1) 查找）
+- 异步数据库操作
+- MySQL 数据库支持
+
+---
+
+## 🔐 权限节点
+
 ### 管理员权限
-* `magicblock.admin`
-   * 包含所有权限
-   * 默认仅 OP 拥有
-   * 包含以下子权限:
-      * `magicblock.use`
-      * `magicblock.give`
-      * `magicblock.reload`
-      * `magicblock.settimes`
-      * `magicblock.addtimes`
-      * `magicblock.food`
+| 权限节点 | 说明 | 默认 |
+|---------|------|------|
+| `magicblock.admin` | 包含所有权限 | OP |
 
 ### 基础权限
-* `magicblock.use`
-   * 授予使用魔术方块基本功能的权限
-   * 默认值：`true` (默认对所有用户启用)
-   * 管理员可以将此权限对特定用户或用户组设置为 `false`，以禁止他们使用魔术方块的功能
-   * 命令: `/mb get`
+| 权限节点 | 说明 | 默认 |
+|---------|------|------|
+| `magicblock.use` | 放置和交互魔法方块 | 所有玩家 |
+| `magicblock.break` | 破坏魔法方块 | 所有玩家 |
+| `magicblock.list` | 查看已绑定的方块列表 | 所有玩家 |
 
-### 管理类权限
-* `magicblock.give`
-   * 允许给予其他玩家魔法方块
-   * 默认仅 OP 拥有
-   * 命令: `/mb give <玩家> [次数]`
-* `magicblock.reload`
-   * 允许重载插件配置
-   * 默认仅 OP 拥有
-   * 命令: `/mb reload`
-* `magicblock.settimes`
-   * 允许设置魔法方块使用次数
-   * 默认仅 OP 拥有
-   * 命令: `/mb settimes <次数>`
-* `magicblock.addtimes`
-   * 允许增加魔法方块使用次数
-   * 默认仅 OP 拥有
-   * 命令: `/mb addtimes <次数>`
+### 管理权限
+| 权限节点 | 说明 | 默认 |
+|---------|------|------|
+| `magicblock.get` | 获取魔法方块 | OP |
+| `magicblock.give` | 给予其他玩家魔法方块 | OP |
+| `magicblock.reload` | 重载插件配置 | OP |
+| `magicblock.settimes` | 设置方块使用次数 | OP |
+| `magicblock.addtimes` | 增加方块使用次数 | OP |
+| `magicblock.getfood` | 获取魔法食物 | OP |
 
-### 功能权限
-* `magicblock.food`
-   * 允许使用魔法食物
-   * 默认所有玩家拥有
-   * 命令: `/mb getfood <食物> [次数]`
-* `magicblock.list`
-   * 允许查看已绑定的方块列表
-   * 默认所有玩家拥有
-   * 命令: `/mb list`
-* `magicblock.performance`
-   * 允许查看插件性能报告
-   * 默认仅 OP 拥有
-   * 命令: `/mb performance` 或 `/mb perf`
+### 权限组权限
+| 权限节点 | 说明 |
+|---------|------|
+| `magicblock.group.<组名>` | 访问特定权限组的材料 |
 
-### 特殊方块权限
-* `magicblock.vip` - 允许使用VIP专属方块
-* `magicblock.mvp` - 允许使用MVP专属方块
+> 例如：`magicblock.group.vip-material` 允许玩家使用配置文件中 `vip-material` 组的方块
 
-## 基本操作说明
-### 魔法方块使用
-1. 获取魔法方块：使用 `/mb get` 命令
-2. 绑定方块：潜行 + 右键点击
-3. 放置方块：直接放置即可
-4. 更改方块类型：潜行 + 左键打开GUI界面
-5. 查看绑定方块：使用 `/mb list` 命令
+---
+
+## 📝 命令列表
+
+主命令：`/magicblock` 或 `/mb`
+
+| 命令 | 说明 | 权限 |
+|-----|------|------|
+| `/mb help` | 显示帮助信息 | 无 |
+| `/mb list` | 打开已绑定方块列表 GUI | `magicblock.list` |
+| `/mb get <材料> [数量] [次数]` | 获取指定材料的魔法方块 | `magicblock.get` |
+| `/mb give <玩家> <材料> [数量] [次数]` | 给予玩家魔法方块 | `magicblock.give` |
+| `/mb getfood <食物> [数量]` | 获取魔法食物 | `magicblock.getfood` |
+| `/mb settimes <次数>` | 设置手持魔法方块的使用次数 | `magicblock.settimes` |
+| `/mb addtimes <次数>` | 增加手持魔法方块的使用次数 | `magicblock.addtimes` |
+| `/mb reload` | 重载插件配置 | `magicblock.reload` |
+
+**参数说明**：
+- `<材料>` - Minecraft 材料名称，如 `DIAMOND_BLOCK`
+- `[数量]` - 可选，默认为 1
+- `[次数]` - 可选，设置为 `-1` 表示无限使用次数
+
+---
+
+## 🎮 使用方法
+
+### 魔法方块操作
+| 操作 | 效果 |
+|-----|------|
+| 潜行 + 右键点击 | 绑定方块 |
+| 潜行 + 左键点击 | 打开方块选择 GUI |
+| 直接放置 | 放置方块（消耗1次使用次数） |
 
 ### GUI 界面操作
-* 左键点击：选择方块类型
-* 使用搜索按钮：可以搜索特定方块
-* 翻页按钮：浏览更多方块选项
+| 操作 | 效果 |
+|-----|------|
+| 左键点击方块 | 选择该方块类型 |
+| 右键点击方块 | 收藏/取消收藏 |
+| 点击搜索按钮 | 搜索特定方块 |
+| 点击翻页按钮 | 浏览更多方块 |
 
 ### 绑定列表操作
-* 左键点击：找回绑定的方块
-* 右键双击：从列表中隐藏方块（不会解除绑定）
+| 操作 | 效果 |
+|-----|------|
+| 左键点击 | 取回绑定的方块 |
+| 双击右键 | 从列表中隐藏（不解除绑定） |
 
-## 配置文件
-### config.yml 主要配置项
-```yaml
-# 调试模式
-debug-mode: false
+---
 
-# 语言设置
-language: "en"  # 可选 "en" 或 "zh_CN"
+## 📊 PlaceholderAPI 变量
 
-# 默认使用次数
-default-block-times: 1000000000
+安装 PlaceholderAPI 后可使用以下变量：
 
-# 黑名单世界
-blacklisted-worlds:
-  - world_nether
-  - world_the_end
+| 变量 | 说明 |
+|-----|------|
+| `%magicblock_block_uses%` | 玩家使用方块的总次数 |
+| `%magicblock_food_uses%` | 玩家使用食物的总次数 |
+| `%magicblock_remaining_uses%` | 手持方块的剩余使用次数 |
+| `%magicblock_max_uses%` | 手持方块的最大使用次数 |
+| `%magicblock_uses_progress%` | 使用进度（百分比） |
+| `%magicblock_progress_bar%` | 使用进度条 |
+| `%magicblock_has_block%` | 是否持有魔法方块 |
+| `%magicblock_has_food%` | 是否持有魔法食物 |
 
-# 性能优化设置
-performance:
-  # Lore 缓存设置
-  lore-cache:
-    enabled: true        # 启用缓存
-    duration: 5000       # 缓存时间（毫秒）
-    max-size: 1000       # 最大缓存条目数
+---
 
-  # 统计保存设置
-  statistics:
-    batch-threshold: 50   # 批量保存阈值
-    save-interval: 30000  # 自动保存间隔（毫秒）
+## 📁 配置文件
 
-  # 数据库优化
-  database-optimization:
-    async-operations: true  # 异步数据库操作
-    batch-updates: true     # 批量更新
-```
+| 文件 | 说明 |
+|-----|------|
+| `config.yml` | 主配置文件（语言、GUI、方块设置等） |
+| `foodconf.yml` | 魔法食物配置 |
+| `lang_zh_CN.yml` | 中文语言文件 |
+| `lang_en.yml` | 英文语言文件 |
 
-### foodconf.yml 食物配置
-```yaml
-# 食物配置示例
-foods:
-  GOLDEN_APPLE:
-    heal: 4
-    saturation: 9.6
-    effects:
-      REGENERATION:
-        duration: 100
-        amplifier: 1
-```
+---
 
-## 使用示例
-1. 给予玩家基础使用权限：
-```yaml
-permissions:
-  - magicblock.use      # 允许放置和交互魔术方块
-  - magicblock.break    # 允许破坏魔术方块
-  - magicblock.list     # 允许查看绑定方块列表
-```
+## 💬 支持
 
-2. 给予玩家VIP权限：
-```yaml
-permissions:
-  - magicblock.use
-  - magicblock.break
-  - magicblock.list
-  - magicblock.group.vip-material  # 访问VIP材料
-```
-
-3. 只能使用但不能破坏魔术方块的玩家：
-```yaml
-permissions:
-  - magicblock.use      # 可以放置和交互
-  - magicblock.list     # 可以查看绑定方块
-  # 注意：没有 magicblock.break 权限
-```
-
-4. 给予玩家管理员权限：
-```yaml
-permissions:
-  - magicblock.admin    # 包含所有权限
-```
-
-5. 给予玩家性能监控权限：
-```yaml
-permissions:
-  - magicblock.performance
-```
-
-## PlaceholderAPI 变量
-支持的变量：
-* `%magicblock_block_uses%` - 显示玩家使用魔法方块的总次数
-* `%magicblock_food_uses%` - 显示玩家使用魔法食物的总次数
-* `%magicblock_remaining_uses%` - 显示当前手持魔法方块的剩余使用次数
-* `%magicblock_has_block%` - 显示玩家是否持有魔法方块
-* `%magicblock_has_food%` - 显示玩家是否持有魔法食物
-* `%magicblock_max_uses%` - 显示当前手持魔法方块的最大使用次数
-* `%magicblock_uses_progress%` - 显示使用进度（百分比）
-
-## 定制功能
-### 物品组权限
-可以通过配置文件为不同权限组设置可用的方块类型：
-```yaml
-group:
-  vip-material:
-    - DIAMOND_BLOCK
-    - EMERALD_BLOCK
-  mvp-material:
-    - BEACON
-    - DRAGON_EGG
-```
-
-### 统计功能
-* 插件会自动记录玩家使用魔法方块和魔法食物的次数
-* 支持通过 PlaceholderAPI 在计分板等地方显示统计信息
-
-### 性能监控功能
-* 使用 `/mb performance` 查看详细的性能报告
-* 实时监控缓存命中率、数据库操作时间等关键指标
-* 智能性能建议，帮助优化服务器配置
-* 支持的性能指标：
-  * Lore 系统性能（更新次数、缓存命中率、平均时间）
-  * 数据库操作统计（操作次数、平均时间、异步操作数）
-  * 任务调度状态（当前活跃任务数）
-  * 运行时间统计
-
-## 注意事项
-1. 魔法方块在使用次数耗尽后会自动消失
-2. 绑定的方块只能被绑定者使用和破坏
-3. 方块不能在黑名单世界中使用
-4. 方块不受活塞影响
-5. 爆炸不会破坏魔法方块
-6. 绑定系统不需要额外权限，任何拥有 `magicblock.use` 的玩家都可以使用
-7. 无限次数方块的创建需要 `magicblock.give` 或 `magicblock.settimes` 权限
-8. VIP和MVP方块需要在配置文件中设置相应的方块列表
-
-## 问题排查
-常见问题：
-1. 无法使用命令：检查权限节点设置
-2. 方块无法放置：检查是否在黑名单世界
-3. GUI无法打开：确认是否手持魔法方块
-4. 方块无法绑定：检查是否已被其他玩家绑定
-
-## 许可协议
-本插件采用修改版MIT许可证：
-1. 允许自由使用
-   * 可以在任何服务器上使用本插件
-   * 允许修改源代码
-   * 允许分发修改后的版本
-2. 限制条款
-   * 禁止将插件或其修改版本用于商业用途
-   * 禁止销售插件或其修改版本
-   * 二次开发时必须保留原作者信息
-3. 免责声明
-   * 本插件按"原样"提供，不提供任何形式的保证
-   * 作者不对使用本插件造成的任何损失负责
-
-## 技术支持
 如有问题或建议，请通过以下方式联系：
-* GitHub Issues，BUG反馈请在能够进行复现的情况下反馈，否则无法修复，功能建议并不是提了就会添加，是否能够实现需要根据实际情况决定。
-* QQ交流群：[134484522]
 
+- **GitHub Issues**: [提交问题](https://github.com/Syferie/MagicBlock/issues)
+- **QQ 交流群**: [134484522](https://qm.qq.com/q/134484522)
 
-© 2024 MagicBlock. All Rights Reserved.
+> **Bug 反馈提示**：请提供详细的复现步骤，否则可能无法修复。
+
+---
+
+## 📜 许可协议
+
+本插件采用修改版 MIT 许可证：
+
+- ✅ 允许在任何服务器上免费使用
+- ✅ 允许修改源代码
+- ✅ 允许分发修改后的版本
+- ❌ 禁止商业销售
+- ❌ 二次开发需保留原作者信息
+
+---
+
+<div align="center">
+
+**© 2024-2025 Syferie. All Rights Reserved.**
+
+</div>
