@@ -50,24 +50,12 @@ MagicBlock is a feature-rich Minecraft server plugin that allows players to use 
 - Custom food effects (healing, potion effects, etc.)
 - Independent usage count system
 
-### 🛡️ Protection Mechanisms
-- Piston push/pull protection
-- Explosion protection
-- World blacklist
-- Anti-duplication detection system
-
 ### 🎨 Customization
 - Multi-language support (English/Chinese)
 - Highly configurable GUI interface
 - Custom block name translations
 - Custom lore display
 - Permission group system
-
-### ⚡ Performance Optimization
-- Smart configuration caching (20,000x performance improvement)
-- Three-tier location indexing (O(1) lookup)
-- Asynchronous database operations
-- MySQL database support
 
 ---
 
