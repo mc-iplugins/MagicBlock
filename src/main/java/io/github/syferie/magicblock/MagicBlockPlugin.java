@@ -732,9 +732,17 @@ public class MagicBlockPlugin extends JavaPlugin {
             debug("魔法方块索引管理器事件已注册");
         }
 
-        CommandManager commandManager = new CommandManager(this);
-        getCommand("magicblock").setExecutor(commandManager);
-        getCommand("magicblock").setTabCompleter(new TabCompleter(this));
+        // 🔧 修复：添加空值检查，防止命令注册失败
+        org.bukkit.command.PluginCommand magicBlockCommand = getCommand("magicblock");
+        if (magicBlockCommand != null) {
+            CommandManager commandManager = new CommandManager(this);
+            magicBlockCommand.setExecutor(commandManager);
+            magicBlockCommand.setTabCompleter(new TabCompleter(this, commandManager));
+            getLogger().info("命令系统注册成功");
+        } else {
+            getLogger().severe("无法注册命令 'magicblock'，请检查 plugin.yml 配置！");
+            getLogger().severe("命令系统将无法使用！");
+        }
     }
 
     private List<Material> loadMaterialsFromConfig() {

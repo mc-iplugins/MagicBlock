@@ -33,7 +33,8 @@ public class ListCommand implements ICommand {
         }
 
         Player player = (Player) sender;
-        plugin.getListener().getGuiManager().getBlockSelectionGUI().openInventory(player);
+        // 打开绑定方块列表
+        plugin.getBlockBindManager().openBindList(player);
     }
 
     @Override

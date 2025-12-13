@@ -386,6 +386,10 @@ public class GUIConfig {
         return itemCreator.matchesMaterial(item, favoritesButton.material);
     }
 
+    public boolean matchesPageInfoButton(ItemStack item) {
+        return itemCreator.matchesMaterial(item, pageInfoButton.material);
+    }
+
     /**
      * 检查收藏功能是否启用
      */

@@ -292,6 +292,12 @@ public abstract class AbstractPagedGUI {
             return true;
         }
 
+        // 页码信息按钮（不执行任何操作，仅阻止后续处理）
+        if (slot == guiConfig.getPageInfoSlot() &&
+            guiConfig.matchesPageInfoButton(item)) {
+            return true;
+        }
+
         return false;
     }
 

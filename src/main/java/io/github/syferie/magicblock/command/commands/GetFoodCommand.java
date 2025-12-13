@@ -53,20 +53,20 @@ public class GetFoodCommand implements ICommand {
         try {
             material = Material.valueOf(materialName.toUpperCase());
         } catch (IllegalArgumentException e) {
-            plugin.sendMessage(sender, "commands.invalid-material", materialName);
+            plugin.sendMessage(sender, "commands.getfood.invalid-food");
             return;
         }
 
         // 检查是否是配置的魔法食物
         if (!plugin.getFoodConfig().contains("foods." + material.name())) {
-            plugin.sendMessage(sender, "commands.not-magic-food", materialName);
+            plugin.sendMessage(sender, "commands.getfood.invalid-food");
             return;
         }
 
         // 创建魔法食物
         ItemStack item = plugin.getMagicFood().createMagicFood(material);
         if (item == null) {
-            plugin.sendMessage(sender, "commands.food-creation-failed", materialName);
+            plugin.sendMessage(sender, "commands.getfood.invalid-food");
             return;
         }
 
@@ -80,7 +80,13 @@ public class GetFoodCommand implements ICommand {
             player.getInventory().addItem(item.clone());
         }
 
-        plugin.sendMessage(player, "commands.getfood.success", amount, material.name());
+        // 获取实际使用次数
+        int actualUseTimes = plugin.getMagicFood().getUseTimes(item);
+        if (actualUseTimes == -1 || actualUseTimes >= Integer.MAX_VALUE - 100) {
+            plugin.sendMessage(player, "commands.getfood.success-infinite");
+        } else {
+            plugin.sendMessage(player, "commands.getfood.success", actualUseTimes);
+        }
     }
 
     @Override

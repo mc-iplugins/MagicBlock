@@ -74,7 +74,7 @@ public class CommandManager implements CommandExecutor {
 
         // 检查权限
         if (!cmd.hasPermission(sender)) {
-            plugin.sendMessage(sender, "messages.no-permission");
+            plugin.sendMessage(sender, "general.no-permission");
             return true;
         }
 
@@ -87,7 +87,6 @@ public class CommandManager implements CommandExecutor {
         } catch (Exception e) {
             plugin.getLogger().severe("执行命令时发生错误: " + subCommand);
             e.printStackTrace();
-            plugin.sendMessage(sender, "commands.execution-error");
         }
 
         return true;

@@ -21,9 +21,9 @@ public class TabCompleter implements org.bukkit.command.TabCompleter {
     private final MagicBlockPlugin plugin;
     private final CommandManager commandManager;
 
-    public TabCompleter(MagicBlockPlugin plugin) {
+    public TabCompleter(MagicBlockPlugin plugin, CommandManager commandManager) {
         this.plugin = plugin;
-        this.commandManager = (CommandManager) plugin.getCommand("magicblock").getExecutor();
+        this.commandManager = commandManager;
     }
 
     @Override

@@ -4,7 +4,6 @@ import io.github.syferie.magicblock.MagicBlockPlugin;
 import io.github.syferie.magicblock.command.ICommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,19 +28,13 @@ public class HelpCommand implements ICommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player)) {
-            plugin.sendMessage(sender, "commands.console-only-error");
-            return;
-        }
-
-        Player player = (Player) sender;
-        sendHelpMessage(player);
+        sendHelpMessage(sender);
     }
 
     /**
      * 发送帮助消息
      */
-    private void sendHelpMessage(Player player) {
+    private void sendHelpMessage(CommandSender sender) {
         List<String> helpMessages = new ArrayList<>();
 
         helpMessages.add(ChatColor.GOLD + "========= MagicBlock 帮助 =========");
@@ -55,13 +48,14 @@ public class HelpCommand implements ICommand {
         helpMessages.add(ChatColor.GOLD + "================================");
 
         for (String message : helpMessages) {
-            player.sendMessage(message);
+            sender.sendMessage(message);
         }
     }
 
     @Override
     public boolean hasPermission(CommandSender sender) {
-        return sender.hasPermission(getPermissionNode());
+        // 帮助命令对所有人开放
+        return true;
     }
 
     @Override

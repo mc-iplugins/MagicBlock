@@ -30,7 +30,7 @@ public class ReloadCommand implements ICommand {
         plugin.reloadPluginAllowedMaterials();
 
         // 发送成功消息
-        plugin.sendMessage(sender, "messages.reload-success");
+        plugin.sendMessage(sender, "commands.reload.success");
     }
 
     @Override

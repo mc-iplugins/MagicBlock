@@ -43,7 +43,7 @@ public class AddTimesCommand implements ICommand {
 
         // 检查是否是魔法方块
         if (!plugin.getBlockManager().isMagicBlock(item)) {
-            plugin.sendMessage(player, "commands.not-magic-block");
+            plugin.sendMessage(player, "commands.addtimes.must-hold");
             return;
         }
 
@@ -52,7 +52,7 @@ public class AddTimesCommand implements ICommand {
         try {
             addTimes = Integer.parseInt(args[0]);
         } catch (NumberFormatException e) {
-            plugin.sendMessage(player, "commands.invalid-number", args[0]);
+            plugin.sendMessage(player, "commands.addtimes.invalid-number");
             return;
         }
 
@@ -61,6 +61,8 @@ public class AddTimesCommand implements ICommand {
         int newTimes = currentTimes + addTimes;
 
         plugin.getBlockManager().setUseTimes(item, newTimes);
+        // 更新 Lore 显示
+        plugin.getBlockManager().updateLore(item, newTimes);
         plugin.sendMessage(player, "commands.addtimes.success", addTimes, newTimes);
     }
 

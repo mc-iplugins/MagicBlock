@@ -4,9 +4,15 @@ import io.github.syferie.magicblock.MagicBlockPlugin;
 import io.github.syferie.magicblock.api.IMagicBlock;
 import io.github.syferie.magicblock.core.AbstractMagicItem;
 import io.github.syferie.magicblock.util.LoreUtil;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,6 +34,56 @@ public class BlockManager extends AbstractMagicItem implements IMagicBlock {
     }
 
     // ==================== 方块识别 ====================
+
+    /**
+     * 创建魔法方块
+     *
+     * @param material 方块材质
+     * @param useTimes 使用次数 (-1 表示无限)
+     * @return 创建的魔法方块
+     */
+    public ItemStack createMagicBlock(Material material, int useTimes) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return item;
+
+        // 1. 设置显示名称
+        String blockName = plugin.getMinecraftLangManager().getItemStackName(item);
+        String nameFormat = plugin.getConfig().getString("display.block-name-format", "&b✦ %s &b✦");
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&',
+            String.format(nameFormat, blockName)));
+
+        // 2. 初始化 Lore 列表，添加魔法标识
+        ArrayList<String> lore = new ArrayList<>();
+        lore.add(plugin.getMagicLore());
+
+        // 3. 添加装饰性 lore（如果启用）
+        if (plugin.getConfig().getBoolean("display.decorative-lore.enabled", true)) {
+            List<String> decorativeLore = plugin.getConfig().getStringList("display.decorative-lore.lines");
+            for (String line : decorativeLore) {
+                lore.add(ChatColor.translateAlternateColorCodes('&', line));
+            }
+        }
+
+        meta.setLore(lore);
+
+        // 4. 添加附魔效果（隐藏）
+        meta.addEnchant(Enchantment.DURABILITY, 1, true);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+
+        // 5. 生成唯一ID
+        plugin.ensureBlockHasId(meta);
+
+        item.setItemMeta(meta);
+
+        // 6. 设置使用次数（这会更新 PDC 数据）
+        setUseTimes(item, useTimes);
+
+        // 7. 更新完整的 Lore（包含使用次数显示）
+        updateLore(item, useTimes == -1 ? Integer.MAX_VALUE - 100 : useTimes);
+
+        return item;
+    }
 
     /**
      * 检查是否是魔法方块

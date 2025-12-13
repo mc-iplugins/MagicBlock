@@ -51,20 +51,24 @@ public class GetCommand implements ICommand {
         // 解析材料
         Material material = Material.getMaterial(materialName.toUpperCase());
         if (material == null || !material.isBlock()) {
-            plugin.sendMessage(sender, "commands.invalid-material", materialName);
+            plugin.sendMessage(sender, "messages.invalid-material");
             return;
         }
 
-        // 创建魔法方块
-        ItemStack item = new ItemStack(material);
-        plugin.getBlockManager().setUseTimes(item, useTimes);
+        // 创建魔法方块（使用 BlockManager 的完整创建方法）
+        ItemStack item = plugin.getBlockManager().createMagicBlock(material, useTimes);
 
         // 给予物品
         for (int i = 0; i < amount; i++) {
             player.getInventory().addItem(item.clone());
         }
 
-        plugin.sendMessage(player, "commands.get.success", amount, material.name(), useTimes);
+        // 根据是否无限次数选择消息
+        if (useTimes == -1 || useTimes >= Integer.MAX_VALUE - 100) {
+            plugin.sendMessage(player, "commands.get.success-infinite");
+        } else {
+            plugin.sendMessage(player, "commands.get.success", useTimes);
+        }
     }
 
     @Override

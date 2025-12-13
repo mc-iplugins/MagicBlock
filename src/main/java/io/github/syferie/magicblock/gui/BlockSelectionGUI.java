@@ -245,6 +245,11 @@ public class BlockSelectionGUI {
                 return;
             }
 
+            // 处理页码信息按钮点击（不执行任何操作，仅阻止替换）
+            if (slot == guiConfig.getPageInfoSlot() && guiConfig.matchesPageInfoButton(clickedItem)) {
+                return;
+            }
+
             // 检查点击的物品是否在允许的材料列表中
             if (!plugin.getAllowedMaterialsForPlayer(player).contains(clickedItem.getType())) {
                 return;

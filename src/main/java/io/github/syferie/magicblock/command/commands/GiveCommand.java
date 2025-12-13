@@ -46,31 +46,40 @@ public class GiveCommand implements ICommand {
         // 查找玩家
         Player target = Bukkit.getPlayer(playerName);
         if (target == null) {
-            plugin.sendMessage(sender, "commands.player-not-found", playerName);
+            plugin.sendMessage(sender, "commands.give.player-not-found", playerName);
             return;
         }
 
         // 解析材料
         Material material = Material.getMaterial(materialName.toUpperCase());
         if (material == null || !material.isBlock()) {
-            plugin.sendMessage(sender, "commands.invalid-material", materialName);
+            plugin.sendMessage(sender, "messages.invalid-material");
             return;
         }
 
-        // 创建魔法方块
-        ItemStack item = new ItemStack(material);
-        plugin.getBlockManager().setUseTimes(item, useTimes);
+        // 创建魔法方块（使用 BlockManager 的完整创建方法）
+        ItemStack item = plugin.getBlockManager().createMagicBlock(material, useTimes);
 
         // 给予物品
         for (int i = 0; i < amount; i++) {
             target.getInventory().addItem(item.clone());
         }
 
-        // 发送消息
-        plugin.sendMessage(sender, "commands.give.success",
-            amount, material.name(), target.getName(), useTimes);
-        plugin.sendMessage(target, "commands.give.received",
-            amount, material.name(), useTimes);
+        // 发送消息 - 根据发送者类型和是否无限次数选择消息
+        boolean isInfinite = useTimes == -1 || useTimes >= Integer.MAX_VALUE - 100;
+        if (sender instanceof Player) {
+            if (isInfinite) {
+                plugin.sendMessage(sender, "commands.give.success.player-infinite", target.getName());
+            } else {
+                plugin.sendMessage(sender, "commands.give.success.player", target.getName(), useTimes);
+            }
+        } else {
+            if (isInfinite) {
+                plugin.sendMessage(sender, "commands.give.success.console-infinite", target.getName());
+            } else {
+                plugin.sendMessage(sender, "commands.give.success.console", target.getName(), useTimes);
+            }
+        }
     }
 
     @Override

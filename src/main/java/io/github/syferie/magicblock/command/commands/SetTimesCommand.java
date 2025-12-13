@@ -43,7 +43,7 @@ public class SetTimesCommand implements ICommand {
 
         // 检查是否是魔法方块
         if (!plugin.getBlockManager().isMagicBlock(item)) {
-            plugin.sendMessage(player, "commands.not-magic-block");
+            plugin.sendMessage(player, "commands.settimes.must-hold");
             return;
         }
 
@@ -52,13 +52,21 @@ public class SetTimesCommand implements ICommand {
         try {
             times = Integer.parseInt(args[0]);
         } catch (NumberFormatException e) {
-            plugin.sendMessage(player, "commands.invalid-number", args[0]);
+            plugin.sendMessage(player, "commands.settimes.invalid-number");
             return;
         }
 
         // 设置使用次数
         plugin.getBlockManager().setUseTimes(item, times);
-        plugin.sendMessage(player, "commands.settimes.success", times);
+        // 更新 Lore 显示
+        plugin.getBlockManager().updateLore(item, times);
+
+        // 根据是否无限次数选择消息
+        if (times == -1 || times >= Integer.MAX_VALUE - 100) {
+            plugin.sendMessage(player, "commands.settimes.success-infinite");
+        } else {
+            plugin.sendMessage(player, "commands.settimes.success", times);
+        }
     }
 
     @Override

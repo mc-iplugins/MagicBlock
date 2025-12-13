@@ -90,7 +90,7 @@ public class FavoriteGUI extends AbstractPagedGUI {
 
         // 检查原始物品是否是魔法方块
         if (!plugin.getBlockManager().isMagicBlock(originalItem)) {
-            plugin.sendMessage(player, "messages.not-magic-block");
+            plugin.sendMessage(player, "messages.must-hold-magic-block");
             player.closeInventory();
             return;
         }
@@ -98,9 +98,8 @@ public class FavoriteGUI extends AbstractPagedGUI {
         // 获取原始物品的使用次数
         int useTimes = plugin.getBlockManager().getUseTimes(originalItem);
 
-        // 创建新的魔法方块
-        ItemStack newBlock = new ItemStack(material);
-        plugin.getBlockManager().setUseTimes(newBlock, useTimes);
+        // 创建新的魔法方块（使用 BlockManager 的完整创建方法）
+        ItemStack newBlock = plugin.getBlockManager().createMagicBlock(material, useTimes);
 
         // 复制绑定信息
         if (plugin.getBlockBindManager().isBlockBound(originalItem)) {
@@ -111,6 +110,7 @@ public class FavoriteGUI extends AbstractPagedGUI {
         player.getInventory().setItemInMainHand(newBlock);
         player.closeInventory();
 
-        plugin.sendMessage(player, "messages.block-changed", material.name());
+        plugin.sendMessage(player, "messages.success-replace",
+            plugin.getMinecraftLangManager().getItemStackName(newBlock));
     }
 }
