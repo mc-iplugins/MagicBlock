@@ -22,6 +22,7 @@ import io.github.syferie.magicblock.gui.FavoriteGUI;
 import io.github.syferie.magicblock.gui.GUIManager;
 import io.github.syferie.magicblock.util.DuplicateBlockDetector;
 import io.github.syferie.magicblock.util.ItemCreator;
+import io.github.syferie.magicblock.charge.ChargeManager;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -70,6 +71,7 @@ public class MagicBlockPlugin extends JavaPlugin {
     private ItemCreator itemCreator;
     private DataMigrationManager dataMigrationManager;
     private ConfigCache configCache;
+    private ChargeManager chargeManager;
 
     @Override
     public void onEnable() {
@@ -581,6 +583,12 @@ public class MagicBlockPlugin extends JavaPlugin {
             getLogger().info("✓ 魔法方块索引已重载");
         }
 
+        // 10. 重载充能系统
+        if (chargeManager != null) {
+            chargeManager.reload();
+            getLogger().info("✓ 充能系统已重载");
+        }
+
         getLogger().info(languageManager.getMessage("general.materials-updated"));
         getLogger().info("插件配置重载完成！");
     }
@@ -705,6 +713,9 @@ public class MagicBlockPlugin extends JavaPlugin {
         // 初始化收藏管理器
         this.favoriteManager = new FavoriteManager(this);
 
+        // 初始化充能系统
+        this.chargeManager = new ChargeManager(this, blockManager);
+
         // 初始化GUI
         this.favoriteGUI = new FavoriteGUI(this, favoriteManager);
         this.guiManager = listener.getGuiManager(); // 使用BlockListener中创建的GUIManager
@@ -823,5 +834,9 @@ public class MagicBlockPlugin extends JavaPlugin {
 
     public ConfigCache getConfigCache() {
         return configCache;
+    }
+
+    public ChargeManager getChargeManager() {
+        return chargeManager;
     }
 }

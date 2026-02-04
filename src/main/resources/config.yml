@@ -445,6 +445,172 @@ allowed-materials:
   - RED_CONCRETE
   - BLACK_CONCRETE
 
+# 充能系统设置
+# -------------------------------------------------------------
+# 配置每种特殊方块的充能方式（根据material区分）
+# 每种方块可以使用vault货币、playerpoints点券或带特定NBT的物品进行充能
+# ✅ 热重载：使用 /mb reload 立即生效
+
+charge-settings:
+  # 默认充能设置（当material没有单独配置时使用）
+  default:
+    # 是否允许使用Vault货币充能
+    vault:
+      enabled: true
+      # 每次充能消耗的货币数量
+      cost: 100
+      # 每次充能增加的使用次数
+      uses: 10
+    
+    # 是否允许使用PlayerPoints点券充能
+    playerpoints:
+      enabled: true
+      # 每次充能消耗的点券数量
+      cost: 50
+      # 每次充能增加的使用次数
+      uses: 10
+    
+    # 是否允许使用带NBT的物品充能
+    nbt-items:
+      enabled: false  # 默认禁用，需要明确配置才启用
+      # NBT物品配置列表
+      items:
+        # 示例配置（删除#启用）
+        # - material: "DIAMOND"                    # 物品类型
+        #   nbt-key: "magic_charge_token"           # NBT键名
+        #   nbt-value: "premium"                   # NBT值
+        #   cost: 1                                 # 每次充能消耗的物品数量
+        #   uses: 20                                # 每次充能增加的使用次数
+        # - material: "EMERALD"
+        #   nbt-key: "charge_item"
+        #   nbt-value: "super_charge"
+        #   cost: 3
+        #   uses: 50
+
+  # 特定material的充能配置（覆盖默认设置）
+  materials:
+    # 示例：为钻石块设置特殊的充能配置
+    # DIAMOND_BLOCK:
+    #   vault:
+    #     enabled: true
+    #     cost: 200
+    #     uses: 20
+    #   playerpoints:
+    #     enabled: true
+    #     cost: 100
+    #     uses: 20
+    #   nbt-items:
+    #     enabled: true
+    #     items:
+    #       - material: "NETHERITE_INGOT"
+    #         nbt-key: "diamond_block_charge"
+    #         nbt-value: "special"
+    #         cost: 1
+    #         uses: 100
+    
+    # 示例：为下界合金块设置仅允许NBT物品充能
+    # NETHERITE_BLOCK:
+    #   vault:
+    #     enabled: false
+    #   playerpoints:
+    #     enabled: false
+    #   nbt-items:
+    #     enabled: true
+    #     items:
+    #       - material: "NETHER_STAR"
+    #         nbt-key: "netherite_charge"
+    #         nbt-value: "legendary"
+    #         cost: 1
+    #         uses: 500
+
+# 充能GUI设置
+# -------------------------------------------------------------
+charge-gui:
+  # GUI标题
+  title: "&8⚡ &b方块充能"
+
+  # GUI 布局（不支持新增关键字）
+  rows:
+    - ">>>> <<<<"
+    - "vp^^x^ ^c"
+
+  # 充能按钮配置
+  buttons:
+    # 金币充能按钮
+    vault-charge:
+      slot: "v"
+      material: "GOLD_INGOT"
+      name: "&6⚡ 金币充能"
+      lore:
+        - "&7消耗金币为魔法方块充能"
+        - "&7每次充能: &e{cost} 金币"
+        - "&7增加次数: &a{uses} 次"
+        - ""
+        - "&7当前余额: &e{balance}"
+        - "&e左键点击进行充能"
+      # 当金币充能禁用时的显示
+      disabled:
+        material: "GRAY_DYE"
+        name: "&8⚡ 金币充能 &7(禁用)"
+        lore:
+          - "&7此方块不支持金币充能"
+          - "&8请联系管理员配置"
+    
+    # 点券充能按钮
+    points-charge:
+      slot: "p"
+      material: "EMERALD"
+      name: "&a⚡ 点券充能"
+      lore:
+        - "&7消耗点券为魔法方块充能"
+        - "&7每次充能: &e{cost} 点券"
+        - "&7增加次数: &a{uses} 次"
+        - ""
+        - "&7当前点券: &e{points}"
+        - "&e左键点击进行充能"
+      # 当点券充能禁用时的显示
+      disabled:
+        material: "GRAY_DYE"
+        name: "&8⚡ 点券充能 &7(禁用)"
+        lore:
+          - "&7此方块不支持点券充能"
+          - "&8请联系管理员配置"
+    
+    # 物品充能按钮
+    item-charge:
+      slot: "c"
+      material: "NETHER_STAR"
+      name: "&b⚡ 物品充能"
+      lore:
+        - "&7使用带特定NBT的物品充能"
+        - "&7充能物品: &e{item}"
+        - "&7需要数量: &e{cost} 个"
+        - "&7增加次数: &a{uses} 次"
+        - ""
+        - "&e请将充能物品放入左侧槽位"
+        - "&e左键点击进行充能"
+      # 当物品充能禁用或未配置时的显示
+      disabled:
+        material: "GRAY_DYE"
+        name: "&8⚡ 物品充能 &7(禁用)"
+        lore:
+          - "&7此方块不支持物品充能"
+          - "&8请联系管理员配置"
+        no-config:
+          material: "BARRIER"
+          name: "&c⚡ 物品充能 &7(未配置)"
+          lore:
+            - "&7管理员尚未配置充能物品"
+            - "&8请联系管理员设置NBT物品"
+    
+    # 关闭按钮
+    close:
+      slot: "x"
+      material: "BARRIER"
+      name: "&c关闭"
+      lore:
+        - "&7点击关闭充能界面"
+
 # 额外材料的组权限
 # -------------------------------------------------------------
 

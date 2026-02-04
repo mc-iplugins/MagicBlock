@@ -12,15 +12,13 @@ import org.bukkit.NamespacedKey;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 魔法物品抽象基类
  *
  * 职责:
- * 1. 使用次数管理 (setUseTimes, getUseTimes, decrementUseTimes)
+ * 1. 使用次数管理 (setUseTimes, getUseTimes, decrementUseTimes, addUseTimes)
  * 2. 最大使用次数管理 (setMaxUseTimes, getMaxUseTimes)
  * 3. Lore 统一生成和缓存
  * 4. PDC 数据持久化
@@ -134,6 +132,21 @@ public abstract class AbstractMagicItem implements IMagicItem {
     }
 
     @Override
+    public void addUseTimes(ItemStack item, int times) {
+        int currentTimes = getUseTimes(item);
+        int newTimes = currentTimes + times;
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.getPersistentDataContainer()
+                .set(useTimesKey, PersistentDataType.INTEGER, newTimes);
+            item.setItemMeta(meta);
+        }
+        // 更新lore
+        updateLore(item, newTimes);
+    }
+
+    @Override
     public void setMaxUseTimes(ItemStack item, int maxTimes) {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return;
@@ -187,7 +200,7 @@ public abstract class AbstractMagicItem implements IMagicItem {
      * 构建完整的lore
      */
     private List<String> buildLore(ItemStack item, Player owner,
-                                    int remainingTimes, int maxTimes, boolean isInfinite) {
+                                   int remainingTimes, int maxTimes, boolean isInfinite) {
         List<String> lore = new ArrayList<>();
 
         // 1. 魔法标识

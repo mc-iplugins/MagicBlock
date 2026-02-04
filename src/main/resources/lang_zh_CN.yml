@@ -64,6 +64,29 @@ messages:
   favorite-removed: "&c⭐ &7已将 &e{0} &7从收藏中移除！"
   favorites-disabled: "&c✖ &7收藏功能已被禁用！"
 
+  # 充能系统相关消息
+  charge-no-permission: "&c✖ &7你没有权限使用充能功能！"
+  charge-vault-not-found: "&c✖ &7服务器未安装Vault经济插件！"
+  charge-playerpoints-not-found: "&c✖ &7服务器未安装PlayerPoints插件！"
+  charge-no-money: "&c✖ &7你的金币不足！需要 &e{0} &7金币，当前只有 &e{1} &7金币。"
+  charge-no-points: "&c✖ &7你的点券不足！需要 &e{0} &7点券，当前只有 &e{1} &7点券。"
+  charge-no-items: "&c✖ &7你没有足够的充能物品！需要 &e{0} &7个，当前只有 &e{1} &7个。"
+  charge-invalid-item: "&c✖ &7这不是有效的充能物品！"
+  charge-success-vault: "&a⚡ &7充能成功！消耗 &e{0} &7金币，增加 &a{1} &7次使用次数。"
+  charge-success-points: "&a⚡ &7充能成功！消耗 &e{0} &7点券，增加 &a{1} &7次使用次数。"
+  charge-success-item: "&a⚡ &7充能成功！消耗 &e{0} 个 {1} &7，增加 &a{2} &7次使用次数。"
+  charge-vault-disabled: "&c✖ &7此方块不支持金币充能！"
+  charge-points-disabled: "&c✖ &7此方块不支持点券充能！"
+  charge-item-disabled: "&c✖ &7此方块不支持物品充能！"
+  charge-item-not-configured: "&c✖ &7管理员尚未配置充能物品！"
+  charge-max-uses-reached: "&e⚡ &7已达到最大使用次数限制！"
+  charge-infinite-uses: "&e⚡ &7无限使用次数的方块无需充能！"
+  charge-gui-title: "&8⚡ &b方块充能"
+  charge-please-place-item: "&e⚡ &7请将充能物品放入指定槽位！"
+  charge-item-placed: "&a✓ &7已放入充能物品，点击充能按钮即可充能。"
+  charge-item-removed: "&7充能物品已移除。"
+  charge-insufficient-items: "&c✖ &7充能物品数量不足！需要 &e{0} &7个，当前只有 &e{1} &7个。"
+
 # 防刷系统消息
 anti-duplication:
   duplicates-removed: "&c⚠ &7检测到并移除了 &c%amount% &7个重复的魔法方块（触发玩家：&b%player%&7）"

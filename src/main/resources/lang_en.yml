@@ -64,6 +64,29 @@ messages:
   favorite-removed: "&c⭐ &7Removed &e{0} &7from favorites!"
   favorites-disabled: "&c✖ &7Favorites feature is disabled!"
 
+  # Charge System Messages
+  charge-no-permission: "&c✖ &7You don't have permission to use charge feature!"
+  charge-vault-not-found: "&c✖ &7Vault economy plugin not found!"
+  charge-playerpoints-not-found: "&c✖ &7PlayerPoints plugin not found!"
+  charge-no-money: "&c✖ &7You don't have enough money! Need &e{0} &7coins, you have &e{1} &7coins."
+  charge-no-points: "&c✖ &7You don't have enough points! Need &e{0} &7points, you have &e{1} &7points."
+  charge-no-items: "&c✖ &7You don't have enough charge items! Need &e{0} &7items, you have &e{1} &7items."
+  charge-invalid-item: "&c✖ &7This is not a valid charge item!"
+  charge-success-vault: "&a⚡ &7Charge successful! Spent &e{0} &7coins, gained &a{1} &7uses."
+  charge-success-points: "&a⚡ &7Charge successful! Spent &e{0} &7points, gained &a{1} &7uses."
+  charge-success-item: "&a⚡ &7Charge successful! Spent &e{0} {1} &7items, gained &a{2} &7uses."
+  charge-vault-disabled: "&c✖ &7This block doesn't support money charge!"
+  charge-points-disabled: "&c✖ &7This block doesn't support points charge!"
+  charge-item-disabled: "&c✖ &7This block doesn't support item charge!"
+  charge-item-not-configured: "&c✖ &7Administrator has not configured charge items!"
+  charge-max-uses-reached: "&e⚡ &7Maximum uses reached!"
+  charge-infinite-uses: "&e⚡ &7Blocks with infinite uses don't need charging!"
+  charge-gui-title: "&8⚡ &bBlock Charging"
+  charge-please-place-item: "&e⚡ &7Please place charge item in the specified slot!"
+  charge-item-placed: "&a✓ &7Charge item placed, click charge button to charge."
+  charge-item-removed: "&7Charge item removed."
+  charge-insufficient-items: "&c✖ &7Insufficient charge items! Need &e{0} &7items, you have &e{1} &7items."
+
 # Anti-Duplication Messages
 anti-duplication:
   duplicates-removed: "&c⚠ &7Detected and removed &c%amount% &7duplicate magic blocks (triggered by &b%player%&7)"

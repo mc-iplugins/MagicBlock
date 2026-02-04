@@ -32,6 +32,7 @@ public class CommandManager implements CommandExecutor {
         // 注册各个命令
         register("help", new HelpCommand(plugin));
         register("list", new ListCommand(plugin));
+        register("charge", new ChargeCommand(plugin));
         register("get", new GetCommand(plugin));
         register("give", new GiveCommand(plugin));
         register("getfood", new GetFoodCommand(plugin));

@@ -22,6 +22,14 @@ public interface IMagicItem {
     // ==================== 使用次数管理 ====================
 
     /**
+     * 增加物品的使用次数
+     *
+     * @param item 物品
+     * @param times 次数
+     */
+    void addUseTimes(ItemStack item, int times);
+
+    /**
      * 设置物品的使用次数
      *
      * @param item 物品
