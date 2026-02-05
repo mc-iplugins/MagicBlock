@@ -20,7 +20,7 @@ public class ChargeCommand implements ICommand {
             return;
         }
 
-//        new ChargeGUI(plugin, blockManager).openGUI(player);
+        plugin.getChargeGUI().openGUI(player);
     }
 
     @Override

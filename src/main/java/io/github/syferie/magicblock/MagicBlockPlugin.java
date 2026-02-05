@@ -7,6 +7,7 @@ import io.github.syferie.magicblock.command.handler.TabCompleter;
 import io.github.syferie.magicblock.config.ConfigCache;
 import io.github.syferie.magicblock.database.DatabaseManager;
 import io.github.syferie.magicblock.food.FoodManager;
+import io.github.syferie.magicblock.gui.ChargeGUI;
 import io.github.syferie.magicblock.hook.PlaceholderHook;
 import io.github.syferie.magicblock.listener.BlockListener;
 import io.github.syferie.magicblock.metrics.Metrics;
@@ -22,7 +23,6 @@ import io.github.syferie.magicblock.gui.FavoriteGUI;
 import io.github.syferie.magicblock.gui.GUIManager;
 import io.github.syferie.magicblock.util.DuplicateBlockDetector;
 import io.github.syferie.magicblock.util.ItemCreator;
-import io.github.syferie.magicblock.charge.ChargeManager;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -50,6 +50,8 @@ import java.util.LinkedHashMap;
 
 public class MagicBlockPlugin extends JavaPlugin {
 
+    private static MagicBlockPlugin instance;
+    private ChargeGUI chargeGUI;
     private BlockListener listener;
     private BlockManager blockManager;
     private BlockBindManager blockBindManager;
@@ -71,10 +73,10 @@ public class MagicBlockPlugin extends JavaPlugin {
     private ItemCreator itemCreator;
     private DataMigrationManager dataMigrationManager;
     private ConfigCache configCache;
-    private ChargeManager chargeManager;
 
     @Override
     public void onEnable() {
+        instance = this;
         // 初始化语言管理器
         this.languageManager = new LanguageManager(this);
 
@@ -129,6 +131,8 @@ public class MagicBlockPlugin extends JavaPlugin {
 
         // 初始化bStats
         initBStats();
+
+        this.chargeGUI = new ChargeGUI(this, blockManager);
 
         getLogger().info(languageManager.getMessage("general.plugin-enabled"));
     }
@@ -252,6 +256,7 @@ public class MagicBlockPlugin extends JavaPlugin {
         } else {
             getLogger().info("Plugin disabled.");
         }
+        instance = null;
     }
 
     // 检查更新
@@ -583,12 +588,6 @@ public class MagicBlockPlugin extends JavaPlugin {
             getLogger().info("✓ 魔法方块索引已重载");
         }
 
-        // 10. 重载充能系统
-        if (chargeManager != null) {
-            chargeManager.reload();
-            getLogger().info("✓ 充能系统已重载");
-        }
-
         getLogger().info(languageManager.getMessage("general.materials-updated"));
         getLogger().info("插件配置重载完成！");
     }
@@ -713,9 +712,6 @@ public class MagicBlockPlugin extends JavaPlugin {
         // 初始化收藏管理器
         this.favoriteManager = new FavoriteManager(this);
 
-        // 初始化充能系统
-        this.chargeManager = new ChargeManager(this, blockManager);
-
         // 初始化GUI
         this.favoriteGUI = new FavoriteGUI(this, favoriteManager);
         this.guiManager = listener.getGuiManager(); // 使用BlockListener中创建的GUIManager
@@ -836,7 +832,12 @@ public class MagicBlockPlugin extends JavaPlugin {
         return configCache;
     }
 
-    public ChargeManager getChargeManager() {
-        return chargeManager;
+    public ChargeGUI getChargeGUI() {
+        return chargeGUI;
     }
+
+    public static MagicBlockPlugin getInstance() {
+        return instance;
+    }
+
 }

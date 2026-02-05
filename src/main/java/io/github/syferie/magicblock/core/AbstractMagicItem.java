@@ -32,7 +32,7 @@ public abstract class AbstractMagicItem implements IMagicItem {
     protected final NamespacedKey maxTimesKey;
 
     // 无限使用次数标识
-    protected static final int INFINITE_USES = Integer.MAX_VALUE - 100;
+    public static final int INFINITE_USES = Integer.MAX_VALUE - 100;
 
     /**
      * 构造函数

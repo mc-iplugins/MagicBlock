@@ -483,30 +483,28 @@ charge-settings:
         #   uses: 20                                # 每次充能增加的使用次数
         # - material: "EMERALD"
         #   nbt-key: "charge_item"
-        #   nbt-value: "super_charge"
         #   cost: 3
         #   uses: 50
 
   # 特定material的充能配置（覆盖默认设置）
   materials:
-    # 示例：为钻石块设置特殊的充能配置
-    # DIAMOND_BLOCK:
-    #   vault:
-    #     enabled: true
-    #     cost: 200
-    #     uses: 20
-    #   playerpoints:
-    #     enabled: true
-    #     cost: 100
-    #     uses: 20
-    #   nbt-items:
-    #     enabled: true
-    #     items:
-    #       - material: "NETHERITE_INGOT"
-    #         nbt-key: "diamond_block_charge"
-    #         nbt-value: "special"
-    #         cost: 1
-    #         uses: 100
+    # 示例：为土块设置特殊的充能配置
+    DIRT:
+      vault:
+        enabled: true
+        cost: 200
+        uses: 20
+      playerpoints:
+        enabled: true
+        cost: 100
+        uses: 20
+      nbt-items:
+        enabled: true
+        items:
+          - material: "DIRT"
+            description: "简单的土块"
+            cost: 1
+            uses: 100
     
     # 示例：为下界合金块设置仅允许NBT物品充能
     # NETHERITE_BLOCK:
@@ -519,7 +517,6 @@ charge-settings:
     #     items:
     #       - material: "NETHER_STAR"
     #         nbt-key: "netherite_charge"
-    #         nbt-value: "legendary"
     #         cost: 1
     #         uses: 500
 
@@ -529,7 +526,7 @@ charge-gui:
   # GUI标题
   title: "&8⚡ &b方块充能"
 
-  # GUI 布局（不支持新增关键字）
+  # GUI 布局（不支持修改）
   rows:
     - ">>>> <<<<"
     - "vp^^x^ ^c"
@@ -537,7 +534,7 @@ charge-gui:
   # 充能按钮配置
   buttons:
     # 金币充能按钮
-    vault-charge:
+    'v':
       slot: "v"
       material: "GOLD_INGOT"
       name: "&6⚡ 金币充能"
@@ -557,7 +554,7 @@ charge-gui:
           - "&8请联系管理员配置"
     
     # 点券充能按钮
-    points-charge:
+    'p':
       slot: "p"
       material: "EMERALD"
       name: "&a⚡ 点券充能"
@@ -577,7 +574,7 @@ charge-gui:
           - "&8请联系管理员配置"
     
     # 物品充能按钮
-    item-charge:
+    'c':
       slot: "c"
       material: "NETHER_STAR"
       name: "&b⚡ 物品充能"
@@ -596,20 +593,27 @@ charge-gui:
         lore:
           - "&7此方块不支持物品充能"
           - "&8请联系管理员配置"
-        no-config:
-          material: "BARRIER"
-          name: "&c⚡ 物品充能 &7(未配置)"
-          lore:
-            - "&7管理员尚未配置充能物品"
-            - "&8请联系管理员设置NBT物品"
-    
+
     # 关闭按钮
-    close:
+    'x':
       slot: "x"
       material: "BARRIER"
       name: "&c关闭"
       lore:
         - "&7点击关闭充能界面"
+
+    '>':
+      slot: ">"
+      material: "GRAY_STAINED_GLASS_PANE"
+      name: "&a>>>"
+    '<':
+      slot: "<"
+      material: "GRAY_STAINED_GLASS_PANE"
+      name: "&a<<<"
+    '^':
+      slot: "^"
+      material: "GRAY_STAINED_GLASS_PANE"
+      name: "&a^^^"
 
 # 额外材料的组权限
 # -------------------------------------------------------------

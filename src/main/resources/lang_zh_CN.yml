@@ -37,7 +37,6 @@ messages:
   success-replace: "&a✔ &7已成功替换为 &b{0}&7！"
   invalid-material: "&c✖ &7无效的方块ID或不允许使用该材料，请重新输入！"
   input-block-id: "&e⚡ &7请输入要替换的方块ID。输入'cancel'取消操作。"
-  must-hold-magic-block: "&c✖ &7你必须手持一个MagicBlock才能打开选择界面！"
   search-prompt: "&e⚡ &7请在聊天栏中输入要搜索的方块名称 &8(&7输入 cancel 取消搜索&8)"
   wait-cooldown: "&c✖ &7请稍等片刻再进行搜索..."
   no-results: "&c✖ &7未找到匹配的方块。"
@@ -71,7 +70,8 @@ messages:
   charge-no-money: "&c✖ &7你的金币不足！需要 &e{0} &7金币，当前只有 &e{1} &7金币。"
   charge-no-points: "&c✖ &7你的点券不足！需要 &e{0} &7点券，当前只有 &e{1} &7点券。"
   charge-no-items: "&c✖ &7你没有足够的充能物品！需要 &e{0} &7个，当前只有 &e{1} &7个。"
-  charge-invalid-item: "&c✖ &7这不是有效的充能物品！"
+  charge-invalid-item: "&c✖ &7该物品不支持充能！"
+  charge-need-invalid-item: "&c✖ &7该物品无法给魔法方块充能！"
   charge-success-vault: "&a⚡ &7充能成功！消耗 &e{0} &7金币，增加 &a{1} &7次使用次数。"
   charge-success-points: "&a⚡ &7充能成功！消耗 &e{0} &7点券，增加 &a{1} &7次使用次数。"
   charge-success-item: "&a⚡ &7充能成功！消耗 &e{0} 个 {1} &7，增加 &a{2} &7次使用次数。"
@@ -83,9 +83,7 @@ messages:
   charge-infinite-uses: "&e⚡ &7无限使用次数的方块无需充能！"
   charge-gui-title: "&8⚡ &b方块充能"
   charge-please-place-item: "&e⚡ &7请将充能物品放入指定槽位！"
-  charge-item-placed: "&a✓ &7已放入充能物品，点击充能按钮即可充能。"
-  charge-item-removed: "&7充能物品已移除。"
-  charge-insufficient-items: "&c✖ &7充能物品数量不足！需要 &e{0} &7个，当前只有 &e{1} &7个。"
+  charge-insufficient-items: "&c✖ &7充能所需物品数量不足！需要 &e{0} &7个，当前只有 &e{1} &7个。"
 
 # 防刷系统消息
 anti-duplication:

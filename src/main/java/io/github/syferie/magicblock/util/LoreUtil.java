@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -164,4 +165,15 @@ public final class LoreUtil {
             return prefix + playerUUID.toString();
         }
     }
+
+    public static String replaceVariables(String text, Map<String, String> replacements) {
+        String result = text;
+        for (Map.Entry<String, String> entry : replacements.entrySet()) {
+            if (entry.getValue() != null) {
+                result = result.replace(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
+    }
+
 }

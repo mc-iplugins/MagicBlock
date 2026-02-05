@@ -93,7 +93,7 @@ public class ChargeConfig {
         ConfigurationSection nbtSection = section.getConfigurationSection("nbt-items");
         if (nbtSection != null) {
             config.nbtEnabled = nbtSection.getBoolean("enabled", false);
-            config.nbtItems = loadNBTItems(nbtSection.getConfigurationSection("items"));
+            config.nbtItems = loadNBTItems(nbtSection.getMapList("items"));
         } else {
             config.nbtEnabled = false;
             config.nbtItems = new ArrayList<>();
@@ -102,24 +102,21 @@ public class ChargeConfig {
         return config;
     }
 
-    private List<NBTItemConfig> loadNBTItems(ConfigurationSection section) {
+    private List<NBTItemConfig> loadNBTItems(List<Map<?, ?>> sectionList) {
         List<NBTItemConfig> items = new ArrayList<>();
-        if (section == null) return items;
+        if (sectionList == null || sectionList.isEmpty()) return items;
 
-        for (String key : section.getKeys(false)) {
-            ConfigurationSection itemSection = section.getConfigurationSection(key);
-            if (itemSection != null) {
-                try {
-                    NBTItemConfig item = new NBTItemConfig();
-                    item.material = Material.valueOf(itemSection.getString("material"));
-                    item.nbtKey = itemSection.getString("nbt-key");
-                    item.nbtValue = itemSection.getString("nbt-value");
-                    item.cost = itemSection.getInt("cost", 1);
-                    item.uses = itemSection.getInt("uses", 1);
-                    items.add(item);
-                } catch (IllegalArgumentException e) {
-                    plugin.getLogger().warning("无效的NBT物品材料: " + itemSection.getString("material"));
-                }
+        for (Map<?, ?> section : sectionList) {
+            try {
+                NBTItemConfig item = new NBTItemConfig();
+                item.material = Material.valueOf((String) section.get("material"));
+                item.nbtKey = (String) section.get("nbt-key");
+                item.description = (String) section.get("description");
+                item.cost = (Integer) section.get("cost");
+                item.uses = (Integer) section.get("uses");
+                items.add(item);
+            } catch (IllegalArgumentException e) {
+                plugin.getLogger().warning("无效的NBT物品材料: " + section.get("material"));
             }
         }
 
@@ -171,7 +168,7 @@ public class ChargeConfig {
     public static class NBTItemConfig {
         public Material material;
         public String nbtKey;
-        public String nbtValue;
+        public String description;
         public int cost;
         public int uses;
     }
@@ -185,8 +182,7 @@ public class ChargeConfig {
             this.title = "&8⚡ &b方块充能";
             this.rows = new String[]{
                     "         ",
-                    "         ",
-                    "         "
+                    "vp  x   c"
             };
             this.buttons = new HashMap<>();
             loadDefaultButtons();
@@ -201,11 +197,10 @@ public class ChargeConfig {
 
         private void loadDefaultButtons() {
             // 默认按钮配置
-            buttons.put("vault-charge", new ButtonConfig('v', "GOLD_INGOT"));
-            buttons.put("points-charge", new ButtonConfig('p', "EMERALD"));
-            buttons.put("item-charge", new ButtonConfig('c', "NETHER_STAR"));
-            buttons.put("close", new ButtonConfig('x', "BARRIER"));
-            buttons.put("item-slot", new ButtonConfig('s', "AIR"));
+            buttons.put("v", new ButtonConfig('v', "GOLD_INGOT"));
+            buttons.put("p", new ButtonConfig('p', "EMERALD"));
+            buttons.put("c", new ButtonConfig('c', "NETHER_STAR"));
+            buttons.put("x", new ButtonConfig('x', "BARRIER"));
         }
 
         private void loadButtons(ConfigurationSection section) {
@@ -231,14 +226,6 @@ public class ChargeConfig {
                         config.disabledName = disabledSection.getString("name", "&8禁用");
                         config.disabledLore = disabledSection.getStringList("lore");
                     }
-
-                    // 加载无配置状态配置
-                    ConfigurationSection noConfigSection = buttonSection.getConfigurationSection("no-config");
-                    if (noConfigSection != null) {
-                        config.noConfigMaterial = noConfigSection.getString("material", "BARRIER");
-                        config.noConfigName = noConfigSection.getString("name", "&c未配置");
-                        config.noConfigLore = noConfigSection.getStringList("lore");
-                    }
                 }
             }
         }
@@ -251,9 +238,6 @@ public class ChargeConfig {
             public String disabledMaterial;
             public String disabledName;
             public List<String> disabledLore;
-            public String noConfigMaterial;
-            public String noConfigName;
-            public List<String> noConfigLore;
 
             public ButtonConfig() {}
 

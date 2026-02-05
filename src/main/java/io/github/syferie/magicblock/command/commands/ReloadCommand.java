@@ -29,6 +29,8 @@ public class ReloadCommand implements ICommand {
         // 重载配置
         plugin.reloadPluginAllowedMaterials();
 
+        plugin.getChargeGUI().reload();
+
         // 发送成功消息
         plugin.sendMessage(sender, "commands.reload.success");
     }
