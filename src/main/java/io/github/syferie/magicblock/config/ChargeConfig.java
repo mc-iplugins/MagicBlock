@@ -1,17 +1,17 @@
 package io.github.syferie.magicblock.config;
 
+import com.google.common.base.Function;
 import io.github.syferie.magicblock.MagicBlockPlugin;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ChargeConfig {
     private final MagicBlockPlugin plugin;
-    private final Map<Material, MaterialChargeConfig> materialConfigs = new HashMap<>();
+    private final List<MaterialChargeConfig> materialConfigs = new ArrayList<>();
     private MaterialChargeConfig defaultConfig;
     private ChargeGUIConfig guiConfig;
 
@@ -34,15 +34,15 @@ public class ChargeConfig {
         // 加载特定材料配置
         ConfigurationSection materialsSection = chargeSection.getConfigurationSection("materials");
         if (materialsSection != null) {
-            for (String materialName : materialsSection.getKeys(false)) {
+            for (String sectionKey : materialsSection.getKeys(false)) {
                 try {
-                    Material material = Material.valueOf(materialName);
-                    MaterialChargeConfig config = loadMaterialChargeConfig(materialsSection.getConfigurationSection(materialName), false);
+                    MaterialChargeConfig config = loadMaterialChargeConfig(materialsSection.getConfigurationSection(sectionKey), false);
                     if (config != null) {
-                        materialConfigs.put(material, config);
+                        materialConfigs.add(config);
                     }
                 } catch (IllegalArgumentException e) {
-                    plugin.getLogger().warning("无效的材料名称: " + materialName);
+                    plugin.getLogger().warning("加载自定义充能配置节点失败: " + sectionKey);
+                    e.printStackTrace();
                 }
             }
         }
@@ -64,6 +64,40 @@ public class ChargeConfig {
         }
 
         MaterialChargeConfig config = new MaterialChargeConfig();
+
+        // 加载材料判断器
+        ConfigurationSection materialSection = section.getConfigurationSection("material");
+        if (materialSection == null) {
+            if (isDefault) { // 默认配置不检查材质
+                config.materialCheck = m -> true;
+            } else {
+                config.materialCheck = m -> true;
+            }
+        } else {
+            List<String> containsList = materialSection.getStringList("contains");
+            List<String> prefixList = materialSection.getStringList("prefix");
+            List<String> suffixList = materialSection.getStringList("suffix");
+            Set<String> exactList = new HashSet<>(materialSection.getStringList("exact"));
+            config.materialCheck = m -> {
+                String name = m.name().toUpperCase();
+                for (String contains : containsList) {
+                    if (name.contains(contains)) {
+                        return true;
+                    }
+                }
+                for (String prefix : prefixList) {
+                    if (name.startsWith(prefix)) {
+                        return true;
+                    }
+                }
+                for (String suffix : suffixList) {
+                    if (name.endsWith(suffix)) {
+                        return true;
+                    }
+                }
+                return exactList.contains(name);
+            };
+        }
 
         // 加载Vault配置
         ConfigurationSection vaultSection = section.getConfigurationSection("vault");
@@ -128,8 +162,16 @@ public class ChargeConfig {
         guiConfig = new ChargeGUIConfig();
     }
 
-    public MaterialChargeConfig getChargeConfig(Material material) {
-        return materialConfigs.getOrDefault(material, defaultConfig);
+    public MaterialChargeConfig getChargeConfig(@Nullable Material material) {
+        if (material == null) {
+            return defaultConfig;
+        }
+        for (MaterialChargeConfig config : materialConfigs) {
+            if (config.materialCheck.apply(material)) {
+                return config;
+            }
+        }
+        return defaultConfig;
     }
 
     public ChargeGUIConfig getGuiConfig() {
@@ -142,6 +184,8 @@ public class ChargeConfig {
     }
 
     public static class MaterialChargeConfig {
+        public Function<@NotNull Material, Boolean> materialCheck;
+
         public boolean vaultEnabled;
         public double vaultCost;
         public int vaultUses;

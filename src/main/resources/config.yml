@@ -474,22 +474,22 @@ charge-settings:
     nbt-items:
       enabled: false  # 默认禁用，需要明确配置才启用
       # NBT物品配置列表
-      items:
-        # 示例配置（删除#启用）
-        # - material: "DIAMOND"                    # 物品类型
-        #   nbt-key: "magic_charge_token"           # NBT键名
-        #   nbt-value: "premium"                   # NBT值
-        #   cost: 1                                 # 每次充能消耗的物品数量
-        #   uses: 20                                # 每次充能增加的使用次数
-        # - material: "EMERALD"
-        #   nbt-key: "charge_item"
-        #   cost: 3
-        #   uses: 50
+      items: []
 
   # 特定material的充能配置（覆盖默认设置）
   materials:
-    # 示例：为土块设置特殊的充能配置
-    DIRT:
+    # 自定义节点名称
+    特殊方块组配置1:
+      # 以下所有材料匹配条件任意满足一种即可通过校验
+      material:
+        # 匹配所有包含下列字符串的材料
+        contains: []
+        # 匹配所有以下列字符串开头的材料
+        prefix: []
+        # 匹配所有以下列字符串结尾的材料
+        suffix: []
+        # 精确匹配下列材料（要与材料名完全相同）
+        exact: ["DIRT"]
       vault:
         enabled: true
         cost: 200
@@ -505,20 +505,12 @@ charge-settings:
             description: "简单的土块"
             cost: 1
             uses: 100
-    
-    # 示例：为下界合金块设置仅允许NBT物品充能
-    # NETHERITE_BLOCK:
-    #   vault:
-    #     enabled: false
-    #   playerpoints:
-    #     enabled: false
-    #   nbt-items:
-    #     enabled: true
-    #     items:
-    #       - material: "NETHER_STAR"
-    #         nbt-key: "netherite_charge"
-    #         cost: 1
-    #         uses: 500
+          - material: "DIRT"
+            nbt-key: "charge_item"
+            description: "特殊的土块"
+            cost: 1
+            uses: 1000
+
 
 # 充能GUI设置
 # -------------------------------------------------------------
