@@ -68,8 +68,8 @@ display:
   # 控制在描述中显示哪些信息行
   show-info:
     bound-player: true     # 显示 "绑定到: 玩家名"
-    usage-count: true      # 显示 "使用次数: X/Y"
-    progress-bar: true     # 显示使用进度条
+    usage-count: true      # 显示 "使用次数: X"
+    progress-bar: false     # 显示使用进度条
   decorative-lore:
     # 在魔法方块标识符下方启用装饰性描述行
     enabled: true

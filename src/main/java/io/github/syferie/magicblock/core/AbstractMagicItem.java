@@ -182,7 +182,7 @@ public abstract class AbstractMagicItem implements IMagicItem {
         if (meta == null) return;
 
         int maxTimes = getMaxUseTimes(item);
-        if (maxTimes <= 0) return;
+        if (maxTimes < 0) return;
 
         boolean isInfinite = LoreUtil.isInfiniteUses(maxTimes);
 

@@ -78,13 +78,13 @@ public final class LoreUtil {
         usageText.append(ChatColor.GRAY).append(prefix).append(" ");
 
         if (isInfinite) {
-            usageText.append(ChatColor.AQUA).append(infiniteSymbol)
-                    .append(ChatColor.GRAY).append("/")
-                    .append(ChatColor.GRAY).append(infiniteSymbol);
+            usageText.append(ChatColor.AQUA).append(infiniteSymbol);
+//                    .append(ChatColor.GRAY).append("/")
+//                    .append(ChatColor.GRAY).append(infiniteSymbol);
         } else {
-            usageText.append(ChatColor.AQUA).append(remainingTimes)
-                    .append(ChatColor.GRAY).append("/")
-                    .append(ChatColor.GRAY).append(maxTimes);
+            usageText.append(ChatColor.AQUA).append(remainingTimes);
+//                    .append(ChatColor.GRAY).append("/")
+//                    .append(ChatColor.GRAY).append(maxTimes);
         }
 
         return usageText.toString();
