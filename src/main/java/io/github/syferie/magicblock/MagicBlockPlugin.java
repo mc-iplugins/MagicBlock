@@ -40,12 +40,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Bukkit;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.HashMap;
-import java.util.UUID;
-import java.util.Map;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 
 public class MagicBlockPlugin extends JavaPlugin {
@@ -754,18 +749,31 @@ public class MagicBlockPlugin extends JavaPlugin {
 
     private List<Material> loadMaterialsFromConfig() {
         List<Material> materials = new ArrayList<>();
-        List<String> configMaterials = getConfig().getStringList("allowed-materials");
+        ConfigurationSection configMaterialsSection = getConfig().getConfigurationSection("allowed-materials");
+        List<String> containsList = configMaterialsSection.getStringList("contains");
+        List<String> prefixList = configMaterialsSection.getStringList("prefix");
+        List<String> suffixList = configMaterialsSection.getStringList("suffix");
+        Set<String> exactList = new HashSet<>(configMaterialsSection.getStringList("exact"));
 
-        for (String materialName : configMaterials) {
-            try {
-                Material material = Material.valueOf(materialName.toUpperCase());
-                if (material.isBlock()) {
-                    materials.add(material);
-                } else {
-                    getLogger().warning("Material " + materialName + " is not a block!");
-                }
-            } catch (IllegalArgumentException e) {
-                getLogger().warning("Invalid material name in config: " + materialName);
+        for (Material material : Material.values()) {
+            String name = material.name().toUpperCase(Locale.ROOT);
+            boolean contains = containsList.stream().anyMatch(name::contains);
+            if (contains) {
+                materials.add(material);
+                continue;
+            }
+            boolean prefix = prefixList.stream().anyMatch(name::startsWith);
+            if (prefix) {
+                materials.add(material);
+                continue;
+            }
+            boolean suffix = suffixList.stream().anyMatch(name::endsWith);
+            if (suffix) {
+                materials.add(material);
+                continue;
+            }
+            if (exactList.contains(name)) {
+                materials.add(material);
             }
         }
 

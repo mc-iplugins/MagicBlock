@@ -366,84 +366,18 @@ database:
 
 # 将在所有玩家的 GUI 选择菜单中显示的材料
 allowed-materials:
-  # 天然方块
-  - STONE
-  - GRASS_BLOCK
-  - DIRT
-  - COBBLESTONE
-  - SAND
-  - GRAVEL
-  - GOLD_ORE
-  - IRON_ORE
-  - COAL_ORE
-
-  # 木材类型
-  - OAK_WOOD
-  - SPRUCE_WOOD
-  - BIRCH_WOOD
-  - JUNGLE_WOOD
-  - ACACIA_WOOD
-  - DARK_OAK_WOOD
-  - OAK_LOG
-  - SPRUCE_LOG
-  - BIRCH_LOG
-  - JUNGLE_LOG
-  - ACACIA_LOG
-  - DARK_OAK_LOG
-
-  # 矿物方块
-  - GOLD_BLOCK
-  - IRON_BLOCK
-  - DIAMOND_BLOCK
-  - EMERALD_BLOCK
-  - LAPIS_BLOCK
-  - REDSTONE_BLOCK
-
-  # 石材类型
-  - GRANITE
-  - DIORITE
-  - ANDESITE
-  - STONE_BRICKS
-  - MOSSY_STONE_BRICKS
-  - CRACKED_STONE_BRICKS
-
-  # 装饰方块
-  - GLASS
-  - BOOKSHELF
-  - OBSIDIAN
-  - GLOWSTONE
-  - SEA_LANTERN
-  - CLAY
-  - TERRACOTTA
-
-  # 下界方块
-  - NETHERRACK
-  - SOUL_SAND
-  - NETHER_BRICKS
-  - MAGMA_BLOCK
-
-  # 末地方块
-  - END_STONE
-  - PURPUR_BLOCK
-  - END_STONE_BRICKS
-
-  # 混凝土颜色
-  - WHITE_CONCRETE
-  - ORANGE_CONCRETE
-  - MAGENTA_CONCRETE
-  - LIGHT_BLUE_CONCRETE
-  - YELLOW_CONCRETE
-  - LIME_CONCRETE
-  - PINK_CONCRETE
-  - GRAY_CONCRETE
-  - LIGHT_GRAY_CONCRETE
-  - CYAN_CONCRETE
-  - PURPLE_CONCRETE
-  - BLUE_CONCRETE
-  - BROWN_CONCRETE
-  - GREEN_CONCRETE
-  - RED_CONCRETE
-  - BLACK_CONCRETE
+  # 匹配所有包含下列字符串的材料
+  contains:
+    - "WOOL"
+  # 匹配所有以下列字符串开头的材料
+  prefix:
+    - "SOUL_"
+  # 匹配所有以下列字符串结尾的材料
+  suffix:
+    - "SIGN"
+  # 精确匹配下列材料（要与材料名完全相同）
+  exact:
+    - "DIRT"
 
 # 充能系统设置
 # -------------------------------------------------------------
