@@ -49,7 +49,7 @@ public class DuplicateBlockDetector implements Listener {
             if (blockId != null) {
                 // 异步检测重复方块
                 plugin.getFoliaLib().getScheduler().runAsync(task -> {
-                    detectAndRemoveDuplicates(player, blockId);
+                    detectAndRemoveDuplicates(player, blockId, event.getNewSlot());
                 });
             }
         }
@@ -68,7 +68,8 @@ public class DuplicateBlockDetector implements Listener {
             if (blockId != null) {
                 // 异步检测重复方块
                 plugin.getFoliaLib().getScheduler().runAsync(task -> {
-                    detectAndRemoveDuplicates(player, blockId);
+                    // 副手不在Contents内
+                    detectAndRemoveDuplicates(player, blockId, -1);
                 });
             }
         }
@@ -76,8 +77,9 @@ public class DuplicateBlockDetector implements Listener {
     
     /**
      * 检测并移除重复的魔法方块
+     * @param activeSlot 触发检测的无限方块，此方块不应该被删除
      */
-    private void detectAndRemoveDuplicates(Player currentPlayer, String blockId) {
+    private void detectAndRemoveDuplicates(Player currentPlayer, String blockId, int activeSlot) {
         long startTime = System.nanoTime();
         duplicateChecks.incrementAndGet();
 
@@ -85,7 +87,7 @@ public class DuplicateBlockDetector implements Listener {
 
         // 🆕 首先检查使用者自己背包中的重复方块（除了当前手持的）
         duplicatesRemovedInThisCheck += removeDuplicatesFromCurrentPlayerInventory(
-            currentPlayer, blockId
+            currentPlayer, blockId, activeSlot
         );
 
         // 然后检查其他在线玩家的背包
@@ -164,7 +166,7 @@ public class DuplicateBlockDetector implements Listener {
     /**
      * 从当前玩家背包中移除重复方块（除了当前手持的方块）
      */
-    private int removeDuplicatesFromCurrentPlayerInventory(Player player, String targetBlockId) {
+    private int removeDuplicatesFromCurrentPlayerInventory(Player player, String targetBlockId, int activeSlot) {
         int removedCount = 0;
         ItemStack[] contents = player.getInventory().getContents();
         ItemStack mainHandItem = player.getInventory().getItemInMainHand();
@@ -173,6 +175,9 @@ public class DuplicateBlockDetector implements Listener {
         for (int i = 0; i < contents.length; i++) {
             ItemStack item = contents[i];
             if (item != null && plugin.getBlockManager().isMagicBlock(item)) {
+                if (i == activeSlot) {
+                    continue;
+                }
                 // 跳过当前手持的方块（主手和副手）
                 if (item.equals(mainHandItem) || item.equals(offHandItem)) {
                     continue;
