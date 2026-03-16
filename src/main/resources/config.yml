@@ -436,12 +436,10 @@ charge-settings:
         enabled: true
         items:
           - material: "DIRT"
-            description: "简单的土块"
             cost: 1
             uses: 100
           - material: "DIRT"
             nbt-key: "charge_item"
-            description: "特殊的土块"
             cost: 1
             uses: 1000
 
