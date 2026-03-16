@@ -1,10 +1,10 @@
 package io.github.syferie.magicblock.gui;
 
-import com.google.gson.Gson;
 import de.themoep.inventorygui.GuiElement;
 import de.themoep.inventorygui.GuiStorageElement;
 import de.themoep.inventorygui.InventoryGui;
 import de.themoep.inventorygui.StaticGuiElement;
+import de.tr7zw.nbtapi.NBTItem;
 import io.github.syferie.magicblock.MagicBlockPlugin;
 import io.github.syferie.magicblock.block.BlockManager;
 import io.github.syferie.magicblock.config.ChargeConfig;
@@ -15,13 +15,11 @@ import io.github.syferie.magicblock.util.LoreUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -333,7 +331,7 @@ public class ChargeGUI {
 
     private ChargeConfig.NBTItemConfig getValidItemConfig(ItemStack item, List<ChargeConfig.NBTItemConfig> nbtItems) {
         if (item == null) return null;
-        
+
         for (ChargeConfig.NBTItemConfig config : nbtItems) {
             if (item.getType() == config.material) {
                 ItemMeta meta = item.getItemMeta();
@@ -344,9 +342,9 @@ public class ChargeGUI {
                     if (meta == null) {
                         continue;
                     }
+                    NBTItem nbtItem = new NBTItem(item);
                     // 存在 key 即可
-                    if (meta.getPersistentDataContainer()
-                            .has(new NamespacedKey(plugin, config.nbtKey), PersistentDataType.STRING)) {
+                    if (nbtItem.hasTag(config.nbtKey)) {
                         return config;
                     }
                 }

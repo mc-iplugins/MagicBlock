@@ -23,6 +23,7 @@ repositories {
 }
 
 dependencies {
+    compileOnly 'de.tr7zw:item-nbt-api-plugin:2.15.3'
     compileOnly 'org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.11.6'
     compileOnly 'org.jetbrains:annotations:24.0.0'

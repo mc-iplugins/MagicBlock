@@ -436,6 +436,7 @@ charge-settings:
         enabled: true
         items:
           - material: "DIRT"
+            description: "仅描述提示，没有实际作用"
             cost: 1
             uses: 100
           - material: "DIRT"
