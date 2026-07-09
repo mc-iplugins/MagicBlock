@@ -95,17 +95,17 @@ public final class LocationUtil {
      * 生成区块键
      */
     public static String getChunkKey(Location location) {
-        return location.getWorld().getName() + "_" +
-               location.getChunk().getX() + "_" +
-               location.getChunk().getZ();
+        int chunkX = location.getBlockX() >> 4;
+        int chunkZ = location.getBlockZ() >> 4;
+        return location.getWorld().getName() + "_" + chunkX + "_" + chunkZ;
     }
 
     /**
      * 生成区块键 (优化版 - 使用世界名 + 打包坐标)
      */
     public static String getChunkKeyOptimized(Location location) {
-        int chunkX = location.getChunk().getX();
-        int chunkZ = location.getChunk().getZ();
+        int chunkX = location.getBlockX() >> 4;
+        int chunkZ = location.getBlockZ() >> 4;
         // 使用位运算打包区块坐标 (各16位)
         int packed = ((chunkX & 0xFFFF) << 16) | (chunkZ & 0xFFFF);
         return location.getWorld().getName() + ":" + packed;

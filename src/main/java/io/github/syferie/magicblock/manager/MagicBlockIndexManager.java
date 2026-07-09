@@ -184,7 +184,91 @@ public class MagicBlockIndexManager implements Listener {
     }
     
     private String getChunkKey(Location loc) {
-        return loc.getWorld().getName() + "_" + loc.getChunk().getX() + "_" + loc.getChunk().getZ();
+        return getChunkKey(loc.getWorld().getName(), loc.getBlockX() >> 4, loc.getBlockZ() >> 4);
+    }
+
+    private String getChunkKey(String worldName, int chunkX, int chunkZ) {
+        return worldName + "_" + chunkX + "_" + chunkZ;
+    }
+
+    private Chunk getLoadedChunk(Location location) {
+        World world = location.getWorld();
+        if (world == null) {
+            return null;
+        }
+
+        int chunkX = location.getBlockX() >> 4;
+        int chunkZ = location.getBlockZ() >> 4;
+        if (!world.isChunkLoaded(chunkX, chunkZ)) {
+            return null;
+        }
+
+        return world.getChunkAt(chunkX, chunkZ);
+    }
+
+    private ParsedLocation parseLocationKey(String locationKey) {
+        String[] parts = locationKey.split(",");
+        if (parts.length != 4) {
+            return null;
+        }
+
+        try {
+            return new ParsedLocation(parts[0],
+                Integer.parseInt(parts[1]),
+                Integer.parseInt(parts[2]),
+                Integer.parseInt(parts[3]));
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private void removeFromChunkIndex(String locationKey, String chunkKey) {
+        if (chunkKey != null) {
+            Set<String> chunkBlocks = chunkMagicBlocks.get(chunkKey);
+            if (chunkBlocks != null) {
+                chunkBlocks.remove(locationKey);
+                if (chunkBlocks.isEmpty()) {
+                    chunkMagicBlocks.remove(chunkKey, chunkBlocks);
+                }
+            }
+            return;
+        }
+
+        for (Map.Entry<String, Set<String>> entry : chunkMagicBlocks.entrySet()) {
+            Set<String> chunkBlocks = entry.getValue();
+            chunkBlocks.remove(locationKey);
+            if (chunkBlocks.isEmpty()) {
+                chunkMagicBlocks.remove(entry.getKey(), chunkBlocks);
+            }
+        }
+    }
+
+    private boolean isLocationInChunk(ParsedLocation location, Chunk chunk) {
+        return location.worldName.equals(chunk.getWorld().getName()) &&
+               location.getChunkX() == chunk.getX() &&
+               location.getChunkZ() == chunk.getZ();
+    }
+
+    private static final class ParsedLocation {
+        private final String worldName;
+        private final int x;
+        private final int y;
+        private final int z;
+
+        private ParsedLocation(String worldName, int x, int y, int z) {
+            this.worldName = worldName;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        private int getChunkX() {
+            return x >> 4;
+        }
+
+        private int getChunkZ() {
+            return z >> 4;
+        }
     }
     
     private void checkAndCleanupWorld(String worldName) {
@@ -198,9 +282,14 @@ public class MagicBlockIndexManager implements Listener {
     }
     
     private void saveToPersistentStorage(Location location, ItemStack magicBlock) {
-        // 保存到区块的持久化数据中
+        // 保存到已加载区块的持久化数据中，避免为写入索引同步加载区块
         String locationString = serializeLocation(location);
-        PersistentDataContainer container = location.getChunk().getPersistentDataContainer();
+        Chunk chunk = getLoadedChunk(location);
+        if (chunk == null) {
+            plugin.debug("跳过保存魔法方块持久化数据，区块未加载: " + locationString);
+            return;
+        }
+        PersistentDataContainer container = chunk.getPersistentDataContainer();
         
         // 获取现有的位置列表
         String existingData = container.get(magicBlockKey, PersistentDataType.STRING);
@@ -219,7 +308,12 @@ public class MagicBlockIndexManager implements Listener {
     
     private void removeFromPersistentStorage(Location location) {
         String locationString = serializeLocation(location);
-        PersistentDataContainer container = location.getChunk().getPersistentDataContainer();
+        Chunk chunk = getLoadedChunk(location);
+        if (chunk == null) {
+            plugin.debug("跳过移除魔法方块持久化数据，区块未加载: " + locationString);
+            return;
+        }
+        PersistentDataContainer container = chunk.getPersistentDataContainer();
         
         String existingData = container.get(magicBlockKey, PersistentDataType.STRING);
         if (existingData == null) return;
@@ -248,30 +342,37 @@ public class MagicBlockIndexManager implements Listener {
                     String[] locations = locationsData.split(";");
                     for (String locationStr : locations) {
                         try {
-                            String[] parts = locationStr.split(",");
-                            if (parts.length == 4) {
-                                World locWorld = Bukkit.getWorld(parts[0]);
-                                if (locWorld != null) {
-                                    Location loc = new Location(locWorld, 
-                                        Integer.parseInt(parts[1]),
-                                        Integer.parseInt(parts[2]),
-                                        Integer.parseInt(parts[3]));
-                                    
-                                    // 验证方块是否仍然存在
-                                    Block block = loc.getBlock();
-                                    if (!block.getType().isAir()) {
-                                        // 添加到索引（不触发持久化）
-                                        String locationKey = serializeLocation(loc);
-                                        String chunkKey = getChunkKey(loc);
-                                        
-                                        globalMagicBlockIndex.add(locationKey);
-                                        chunkMagicBlocks.computeIfAbsent(chunkKey, k -> ConcurrentHashMap.newKeySet())
-                                                       .add(locationKey);
-                                        worldsWithMagicBlocks.add(world.getName());
-                                        
-                                        loadedCount++;
-                                    }
-                                }
+                            ParsedLocation parsedLocation = parseLocationKey(locationStr);
+                            if (parsedLocation == null) {
+                                plugin.debug("跳过无效的魔法方块位置: " + locationStr);
+                                continue;
+                            }
+
+                            World locWorld = Bukkit.getWorld(parsedLocation.worldName);
+                            if (locWorld == null) {
+                                continue;
+                            }
+
+                            if (!isLocationInChunk(parsedLocation, chunk)) {
+                                plugin.debug("跳过不属于当前已加载区块的魔法方块位置: " + locationStr);
+                                continue;
+                            }
+
+                            // 验证当前已加载区块中的方块是否仍然存在，避免触发其他区块同步加载
+                            Block block = chunk.getBlock(parsedLocation.x & 0xF, parsedLocation.y, parsedLocation.z & 0xF);
+                            if (!block.getType().isAir()) {
+                                // 添加到索引（不触发持久化）
+                                Location loc = new Location(locWorld, parsedLocation.x, parsedLocation.y, parsedLocation.z);
+                                String locationKey = serializeLocation(loc);
+                                String chunkKey = getChunkKey(parsedLocation.worldName,
+                                    parsedLocation.getChunkX(), parsedLocation.getChunkZ());
+                                
+                                globalMagicBlockIndex.add(locationKey);
+                                chunkMagicBlocks.computeIfAbsent(chunkKey, k -> ConcurrentHashMap.newKeySet())
+                                               .add(locationKey);
+                                worldsWithMagicBlocks.add(locWorld.getName());
+                                
+                                loadedCount++;
                             }
                         } catch (Exception e) {
                             plugin.debug("加载魔法方块位置时出错: " + locationStr + " - " + e.getMessage());
@@ -295,48 +396,59 @@ public class MagicBlockIndexManager implements Listener {
         plugin.debug("开始清理无效的魔法方块索引...");
         
         int removedCount = 0;
+        int skippedUnloadedCount = 0;
         Iterator<String> iterator = globalMagicBlockIndex.iterator();
         
         while (iterator.hasNext()) {
             String locationKey = iterator.next();
+            ParsedLocation parsedLocation = parseLocationKey(locationKey);
+            if (parsedLocation == null) {
+                // 无效的位置格式，移除所有内存索引引用
+                iterator.remove();
+                removeFromChunkIndex(locationKey, null);
+                removedCount++;
+                continue;
+            }
+
+            String chunkKey = getChunkKey(parsedLocation.worldName,
+                parsedLocation.getChunkX(), parsedLocation.getChunkZ());
+            World world = Bukkit.getWorld(parsedLocation.worldName);
+            if (world == null) {
+                iterator.remove();
+                removeFromChunkIndex(locationKey, chunkKey);
+                checkAndCleanupWorld(parsedLocation.worldName);
+                removedCount++;
+                continue;
+            }
+
+            if (!world.isChunkLoaded(parsedLocation.getChunkX(), parsedLocation.getChunkZ())) {
+                // 关键修复：未加载区块不访问方块，避免主线程同步加载区块导致卡顿
+                skippedUnloadedCount++;
+                continue;
+            }
+
             try {
-                String[] parts = locationKey.split(",");
-                if (parts.length == 4) {
-                    World world = Bukkit.getWorld(parts[0]);
-                    if (world != null) {
-                        Location loc = new Location(world,
-                            Integer.parseInt(parts[1]),
-                            Integer.parseInt(parts[2]),
-                            Integer.parseInt(parts[3]));
-                        
-                        // 检查方块是否仍然存在
-                        if (loc.getBlock().getType().isAir()) {
-                            // 方块不存在，从索引中移除
-                            iterator.remove();
-                            
-                            // 同时从区块索引中移除
-                            String chunkKey = getChunkKey(loc);
-                            Set<String> chunkBlocks = chunkMagicBlocks.get(chunkKey);
-                            if (chunkBlocks != null) {
-                                chunkBlocks.remove(locationKey);
-                                if (chunkBlocks.isEmpty()) {
-                                    chunkMagicBlocks.remove(chunkKey);
-                                }
-                            }
-                            
-                            removedCount++;
-                        }
-                    }
+                // 此处已确认区块加载，访问方块不会触发 ServerChunkCache.syncLoad
+                Block block = world.getBlockAt(parsedLocation.x, parsedLocation.y, parsedLocation.z);
+                if (block.getType().isAir()) {
+                    iterator.remove();
+                    removeFromChunkIndex(locationKey, chunkKey);
+                    checkAndCleanupWorld(parsedLocation.worldName);
+                    removedCount++;
                 }
             } catch (Exception e) {
-                // 无效的位置格式，移除
                 iterator.remove();
+                removeFromChunkIndex(locationKey, chunkKey);
+                checkAndCleanupWorld(parsedLocation.worldName);
                 removedCount++;
             }
         }
         
         if (removedCount > 0) {
             plugin.debug("清理了 " + removedCount + " 个无效的魔法方块索引");
+        }
+        if (skippedUnloadedCount > 0) {
+            plugin.debug("跳过了 " + skippedUnloadedCount + " 个未加载区块中的魔法方块索引");
         }
     }
     
@@ -364,7 +476,7 @@ public class MagicBlockIndexManager implements Listener {
     @EventHandler
     public void onChunkLoad(ChunkLoadEvent event) {
         Chunk chunk = event.getChunk();
-        String chunkKey = chunk.getWorld().getName() + "_" + chunk.getX() + "_" + chunk.getZ();
+        String chunkKey = getChunkKey(chunk.getWorld().getName(), chunk.getX(), chunk.getZ());
 
         // 检查该区块是否已经在索引中
         if (chunkMagicBlocks.containsKey(chunkKey)) {
@@ -388,33 +500,40 @@ public class MagicBlockIndexManager implements Listener {
 
             for (String locationStr : locations) {
                 try {
-                    String[] parts = locationStr.split(",");
-                    if (parts.length == 4) {
-                        World world = Bukkit.getWorld(parts[0]);
-                        if (world != null) {
-                            Location loc = new Location(world,
-                                Integer.parseInt(parts[1]),
-                                Integer.parseInt(parts[2]),
-                                Integer.parseInt(parts[3]));
+                    ParsedLocation parsedLocation = parseLocationKey(locationStr);
+                    if (parsedLocation == null) {
+                        plugin.debug("跳过无效的区块魔法方块位置: " + locationStr);
+                        continue;
+                    }
 
-                            // 验证方块是否仍然存在
-                            Block block = loc.getBlock();
-                            if (!block.getType().isAir()) {
-                                // 添加到索引（不触发持久化）
-                                String locationKey = serializeLocation(loc);
-                                String chunkKey = getChunkKey(loc);
+                    World world = Bukkit.getWorld(parsedLocation.worldName);
+                    if (world == null) {
+                        continue;
+                    }
 
-                                globalMagicBlockIndex.add(locationKey);
-                                chunkMagicBlocks.computeIfAbsent(chunkKey, k -> ConcurrentHashMap.newKeySet())
-                                               .add(locationKey);
-                                worldsWithMagicBlocks.add(world.getName());
+                    if (!isLocationInChunk(parsedLocation, chunk)) {
+                        plugin.debug("跳过不属于当前已加载区块的魔法方块位置: " + locationStr);
+                        continue;
+                    }
 
-                                loadedCount++;
-                            } else {
-                                // 方块不存在，从PCD中清理
-                                plugin.debug("清理不存在的魔法方块: " + locationStr);
-                            }
-                        }
+                    // 验证当前已加载区块中的方块是否仍然存在，避免触发其他区块同步加载
+                    Block block = chunk.getBlock(parsedLocation.x & 0xF, parsedLocation.y, parsedLocation.z & 0xF);
+                    if (!block.getType().isAir()) {
+                        // 添加到索引（不触发持久化）
+                        Location loc = new Location(world, parsedLocation.x, parsedLocation.y, parsedLocation.z);
+                        String locationKey = serializeLocation(loc);
+                        String chunkKey = getChunkKey(parsedLocation.worldName,
+                            parsedLocation.getChunkX(), parsedLocation.getChunkZ());
+
+                        globalMagicBlockIndex.add(locationKey);
+                        chunkMagicBlocks.computeIfAbsent(chunkKey, k -> ConcurrentHashMap.newKeySet())
+                                       .add(locationKey);
+                        worldsWithMagicBlocks.add(world.getName());
+
+                        loadedCount++;
+                    } else {
+                        // 方块不存在，从PCD中清理
+                        plugin.debug("清理不存在的魔法方块: " + locationStr);
                     }
                 } catch (Exception e) {
                     plugin.debug("加载区块魔法方块位置时出错: " + locationStr + " - " + e.getMessage());
